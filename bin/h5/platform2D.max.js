@@ -385,13 +385,35 @@ var Laya=window.Laya=(function(window,document){
 	var Platform2DTest=(function(){
 		function Platform2DTest(){
 			Laya.init(1136,640);
-			Stat.show(0,0);
-			var face=new Surface();
-			face.width=200;
-			face.height=100;
-			face.leftSkew=60;
+			var face=new Surface(100,0,200,100);
 			console.log(face.getLeftRange(50));
-			console.log("inini")
+			var spt=new Sprite();
+			var g=spt.graphics;
+			Laya.stage.addChild(spt);
+			g.drawLine(face.upLeftPoint.x,
+			face.upLeftPoint.y,
+			face.upRightPoint.x,
+			face.upRightPoint.y,
+			"#ff0000");
+			g.drawLine(face.upLeftPoint.x,
+			face.upLeftPoint.y,
+			face.downleftPoint.x,
+			face.downleftPoint.y,
+			"#ff0000");
+			g.drawLine(face.downleftPoint.x,
+			face.downleftPoint.y,
+			face.downRightPoint.x,
+			face.downRightPoint.y,
+			"#ff0000");
+			g.drawLine(face.upRightPoint.x,
+			face.upRightPoint.y,
+			face.downRightPoint.x,
+			face.downRightPoint.y,
+			"#ff0000");
+			g.drawLine(0,50,
+			300,
+			50,
+			"#ff00ff");
 		}
 
 		__class(Platform2DTest,'Platform2DTest');
@@ -406,21 +428,33 @@ var Laya=window.Laya=(function(window,document){
 	*/
 	//class Surface
 	var Surface=(function(){
-		function Surface(){
+		function Surface(upLeft,downLeft,upRight,downRight,up,down){
 			this.x=0;
 			this.y=0;
-			this.width=0;
-			this.height=0;
-			this.leftSkew=0;
+			this._leftSkew=0;
 			this.rightkew=0;
 			this.leftBlock=false;
 			this.rightBlock=false;
 			this.upBlock=false;
 			this.downBlock=false;
+			this.upLeftPoint=null;
+			this.upRightPoint=null;
+			this.downleftPoint=null;
+			this.downRightPoint=null;
 			this._leftH=0;
 			this._rightH=0;
 			this._upH=0;
 			this._downH=0;
+			(upLeft===void 0)&& (upLeft=0);
+			(downLeft===void 0)&& (downLeft=0);
+			(upRight===void 0)&& (upRight=100);
+			(downRight===void 0)&& (downRight=100);
+			(up===void 0)&& (up=0);
+			(down===void 0)&& (down=100);
+			this.upLeftPoint=new Point(upLeft,up);
+			this.upRightPoint=new Point(upRight,up);
+			this.downleftPoint=new Point(downLeft,down);
+			this.downRightPoint=new Point(downRight,down);
 		}
 
 		__class(Surface,'Surface');
@@ -431,8 +465,11 @@ var Laya=window.Laya=(function(window,document){
 		*@return 左边边界的坐标
 		*/
 		__proto.getLeftRange=function(posY){
-			var rand=MathUtil.dgs2rds(this.leftSkew);
+			if (this.leftSkew==90)return this.upLeftPoint.x;
+			var rand=this.leftSkew *Math.PI / 180;
+			console.log(" this.leftSkew",this.leftSkew);
 			var vx=this.height / Math.tan(rand);
+			console.log(vx);
 			var sh=this.y+this.height-(posY-this.y);
 			var dx=sh / Math.tan(rand);
 			return this.x+dx;
@@ -455,6 +492,17 @@ var Laya=window.Laya=(function(window,document){
 		});
 
 		/**
+		*计算右边的倾斜角度
+		*@return
+		*/
+		__getset(0,__proto,'rightSkew',function(){
+			return MathUtil1.getRotation(this.upRightPoint.x,
+			this.upRightPoint.y,
+			this.downRightPoint.x,
+			this.downRightPoint.y);
+		});
+
+		/**
 		*下边高（一般为0）
 		*/
 		__getset(0,__proto,'downH',function(){return this._downH;},function(value){
@@ -470,202 +518,25 @@ var Laya=window.Laya=(function(window,document){
 			this.rightBlock=false;
 		});
 
+		/**
+		*计算左边的倾斜角度
+		*@return
+		*/
+		__getset(0,__proto,'leftSkew',function(){
+			return MathUtil1.getRotation(this.upLeftPoint.x,
+			this.upLeftPoint.y,
+			this.downleftPoint.x,
+			this.downleftPoint.y);
+		});
+
+		/**
+		*高度
+		*/
+		__getset(0,__proto,'height',function(){
+			return this.downleftPoint.y-this.upLeftPoint.y;
+		});
+
 		return Surface;
-	})()
-
-
-	//class utils.MathUtil
-	var MathUtil=(function(){
-		function MathUtil(){};
-		__class(MathUtil,'utils.MathUtil');
-		MathUtil.rds2dgs=function(radians){
-			return MathUtil.fixAngle(radians *180 / Math.PI);
-		}
-
-		MathUtil.dgs2rds=function(degrees){
-			return degrees *Math.PI / 180;
-		}
-
-		MathUtil.fixAngle=function(angle){
-			angle %=360;
-			if (angle < 0)return angle+360;
-			return angle;
-		}
-
-		MathUtil.fixNumber=function(num,min,range){
-			num %=range;
-			if (num < min)
-				return num+range;
-			return num;
-		}
-
-		MathUtil.fixHalfAngle=function(angle){
-			angle %=180;
-			if (angle < 0)
-				return angle+180;
-			return angle;
-		}
-
-		MathUtil.getFactorial=function(num){
-			if(num==0)return 1;
-			return num *MathUtil.getFactorial(num-1);
-		}
-
-		MathUtil.power=function(num,pow){
-			if(pow==0)return 1;
-			return num *MathUtil.power(num,pow-1);
-		}
-
-		MathUtil.round=function(num,interval){
-			(interval===void 0)&& (interval=.1);
-			return Math.round(num / interval)*interval;
-		}
-
-		MathUtil.floor=function(num,interval){
-			(interval===void 0)&& (interval=.1);
-			return Math.floor(num / interval)*interval;
-		}
-
-		MathUtil.ceil=function(num,interval){
-			(interval===void 0)&& (interval=.1);
-			return Math.ceil(num / interval)*interval;
-		}
-
-		MathUtil.getAbsolute=function(num){
-			return num < 0 ?-num :num;
-		}
-
-		MathUtil.getRemainedNum=function(mainNum,divided){
-			return mainNum-((mainNum / divided)>> 0)*divided;
-		}
-
-		MathUtil.isEven=function(num){
-			return Boolean(MathUtil.isEvenByDivided(num,2));
-		}
-
-		MathUtil.isEvenByDivided=function(num,divided){
-			return num & (divided-1);
-		}
-
-		MathUtil.getSlope=function(x1,y1,x2,y2){
-			var slope=(y1-y2)/ (x1-x2);
-			return slope;
-		}
-
-		MathUtil.threeSidesMathAngle=function(a,b,c){
-			var cosA=(c *c+b *b-a *a)/ (2 *b *c);
-			var A=Math.round(utils.MathUtil.rds2dgs(Math.acos(cosA)));
-			var cosB=(a *a+c *c-b *b)/ (2 *a *c);
-			var B=Math.round(utils.MathUtil.rds2dgs(Math.acos(cosB)));
-			var cosC=(a *a+b *b-c *c)/ (2 *a *b);
-			var C=Math.round(utils.MathUtil.rds2dgs(Math.acos(cosC)));
-			return {"A":A,"B":B,"C":C };
-		}
-
-		MathUtil.sineLaw=function(angle,line){
-			return line / Math.sin(angle)/ 2;
-		}
-
-		MathUtil.rotate=function(cx,cy,x,y,sin,cos,reverse){
-			var point=new Point();
-			var dx=x-cx;
-			var dy=y-cy;
-			if (reverse){
-				point.x=dx *cos+dy *sin+cx;
-				point.y=dy *cos-dx *sin+cy;
-			}
-			else{
-				point.x=dx *cos-dy *sin+cx;
-				point.y=dy *cos+dx *sin+cy;
-			}
-			return point;
-		}
-
-		MathUtil.triangleCentroid=function(a,b,c){
-			return new Point((a.x+b.x+c.x)/ 3,(a.y+b.y+c.y)/ 3);
-		}
-
-		MathUtil.triangleCircumscribedCircleCenter=function(a,b,c){
-			var axp=Math.pow(a.x,2);
-			var bxp=Math.pow(b.x,2);
-			var cxp=Math.pow(c.x,2);
-			var ayp=Math.pow(a.y,2);
-			var byp=Math.pow(b.y,2);
-			var cyp=Math.pow(c.y,2);
-			var x=((b.y-a.y)*(cyp-ayp+cxp-axp)-(c.y-a.y)*(byp-ayp+bxp-axp))/
-			(2 *(c.x-a.x)*(b.y-a.y)-2 *((b.x-a.x)*(c.y-a.y)));
-			var y=((b.x-a.x)*(cxp-axp+cyp-ayp)-(c.x-a.x)*(bxp-axp+byp-ayp))/
-			(2 *(c.y-a.y)*(b.x-a.x)-2 *((b.y-a.y)*(c.x-a.x)));
-			return new Point(x,y);
-		}
-
-		MathUtil.arithmeticSequenceIndexValue=function(sn,d){
-			var n=utils.MathUtil.arithmeticSequenceIndex(sn,d);
-			return (n+1)*d-(d-1);
-		}
-
-		MathUtil.arithmeticSequenceIndex=function(sn,d){
-			var hd=d *.5;
-			var a=hd;
-			var b=1-hd;
-			var c=-sn;
-			return (-b+Math.sqrt(b *b-(4 *a *c)))/ (2 *a);
-		}
-
-		MathUtil.distance=function(x1,y1,x2,y2){
-			return Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
-		}
-
-		MathUtil.isInsideTriangle=function(a,b,c,p){
-			var planeAB=(a.x-p.x)*(b.y-p.y)-(b.x-p.x)*(a.y-p.y);
-			var planeBC=(b.x-p.x)*(c.y-p.y)-(c.x-p.x)*(b.y-p.y);
-			var planeCA=(c.x-p.x)*(a.y-p.y)-(a.x-p.x)*(c.y-p.y);
-			return MathUtil.sign(planeAB)==MathUtil.sign(planeBC)&& MathUtil.sign(planeBC)==MathUtil.sign(planeCA);
-		}
-
-		MathUtil.sign=function(n){
-			return Math.abs(n)/ n;
-		}
-
-		MathUtil.triangleArea=function(a,b,c){
-			return (c.x *b.y-b.x *c.y)-(c.x *a.y-a.x *c.y)+(b.x *a.y-a.x *b.y);
-		}
-
-		MathUtil.isInsideSquare=function(a,b,c,d,p){
-			if (MathUtil.triangleArea(a,b,p)> 0 ||
-				MathUtil.triangleArea(b,c,p)> 0 ||
-			MathUtil.triangleArea(c,d,p)> 0 ||
-			MathUtil.triangleArea(d,a,p)> 0)
-			return false;
-			return true;
-		}
-
-		MathUtil.segmentsIntr=function(a,b,c,d){
-			var area_abc=(a.x-c.x)*(b.y-c.y)-(a.y-c.y)*(b.x-c.x);
-			var area_abd=(a.x-d.x)*(b.y-d.y)-(a.y-d.y)*(b.x-d.x);
-			if (area_abc *area_abd >=0){
-				return null;
-			};
-			var area_cda=(c.x-a.x)*(d.y-a.y)-(c.y-a.y)*(d.x-a.x);
-			var area_cdb=area_cda+area_abc-area_abd;
-			if (area_cda *area_cdb >=0){
-				return null;
-			};
-			var t=area_cda / (area_abd-area_abc);
-			var dx=t *(b.x-a.x);
-			var dy=t *(b.y-a.y);
-			return new Point(a.x+dx ,a.y+dy);
-		}
-
-		MathUtil.getAngleQuadrant=function(angle){
-			angle=utils.MathUtil.fixAngle(angle);
-			if (angle >=0 && angle < 90)return 1;
-			if (angle >=90 && angle < 180)return 2;
-			if (angle >=180 && angle < 270)return 3;
-			return 4;
-		}
-
-		return MathUtil;
 	})()
 
 
@@ -3334,6 +3205,114 @@ var Laya=window.Laya=(function(window,document){
 		GrahamScan._temPList=[];
 		GrahamScan._temArr=[];
 		return GrahamScan;
+	})()
+
+
+	/**
+	*@private
+	*<code>MathUtil</code> 是一个数据处理工具类。
+	*/
+	//class laya.maths.MathUtil
+	var MathUtil1=(function(){
+		function MathUtil(){};
+		__class(MathUtil,'laya.maths.MathUtil',null,'MathUtil1');
+		MathUtil.subtractVector3=function(l,r,o){
+			o[0]=l[0]-r[0];
+			o[1]=l[1]-r[1];
+			o[2]=l[2]-r[2];
+		}
+
+		MathUtil.lerp=function(left,right,amount){
+			return left *(1-amount)+right *amount;
+		}
+
+		MathUtil.scaleVector3=function(f,b,e){
+			e[0]=f[0] *b;
+			e[1]=f[1] *b;
+			e[2]=f[2] *b;
+		}
+
+		MathUtil.lerpVector3=function(l,r,t,o){
+			var ax=l[0],ay=l[1],az=l[2];
+			o[0]=ax+t *(r[0]-ax);
+			o[1]=ay+t *(r[1]-ay);
+			o[2]=az+t *(r[2]-az);
+		}
+
+		MathUtil.lerpVector4=function(l,r,t,o){
+			var ax=l[0],ay=l[1],az=l[2],aw=l[3];
+			o[0]=ax+t *(r[0]-ax);
+			o[1]=ay+t *(r[1]-ay);
+			o[2]=az+t *(r[2]-az);
+			o[3]=aw+t *(r[3]-aw);
+		}
+
+		MathUtil.slerpQuaternionArray=function(a,Offset1,b,Offset2,t,out,Offset3){
+			var ax=a[Offset1+0],ay=a[Offset1+1],az=a[Offset1+2],aw=a[Offset1+3],bx=b[Offset2+0],by=b[Offset2+1],bz=b[Offset2+2],bw=b[Offset2+3];
+			var omega,cosom,sinom,scale0,scale1;
+			cosom=ax *bx+ay *by+az *bz+aw *bw;
+			if (cosom < 0.0){
+				cosom=-cosom;
+				bx=-bx;
+				by=-by;
+				bz=-bz;
+				bw=-bw;
+			}
+			if ((1.0-cosom)> 0.000001){
+				omega=Math.acos(cosom);
+				sinom=Math.sin(omega);
+				scale0=Math.sin((1.0-t)*omega)/ sinom;
+				scale1=Math.sin(t *omega)/ sinom;
+				}else {
+				scale0=1.0-t;
+				scale1=t;
+			}
+			out[Offset3+0]=scale0 *ax+scale1 *bx;
+			out[Offset3+1]=scale0 *ay+scale1 *by;
+			out[Offset3+2]=scale0 *az+scale1 *bz;
+			out[Offset3+3]=scale0 *aw+scale1 *bw;
+			return out;
+		}
+
+		MathUtil.getRotation=function(x0,y0,x1,y1){
+			return Math.atan2(y1-y0,x1-x0)/ Math.PI *180;
+		}
+
+		MathUtil.sortBigFirst=function(a,b){
+			if (a==b)
+				return 0;
+			return b > a ? 1 :-1;
+		}
+
+		MathUtil.sortSmallFirst=function(a,b){
+			if (a==b)
+				return 0;
+			return b > a ?-1 :1;
+		}
+
+		MathUtil.sortNumBigFirst=function(a,b){
+			return parseFloat(b)-parseFloat(a);
+		}
+
+		MathUtil.sortNumSmallFirst=function(a,b){
+			return parseFloat(a)-parseFloat(b);
+		}
+
+		MathUtil.sortByKey=function(key,bigFirst,forceNum){
+			(bigFirst===void 0)&& (bigFirst=false);
+			(forceNum===void 0)&& (forceNum=true);
+			var _sortFun;
+			if (bigFirst){
+				_sortFun=forceNum ? MathUtil.sortNumBigFirst :MathUtil.sortBigFirst;
+				}else {
+				_sortFun=forceNum ? MathUtil.sortNumSmallFirst :MathUtil.sortSmallFirst;
+			}
+			return function (a,b){
+				return _sortFun(a[key],b[key]);
+			}
+		}
+
+		return MathUtil;
 	})()
 
 
