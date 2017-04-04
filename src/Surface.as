@@ -178,35 +178,37 @@ public class Surface
 	/**
 	 * 绘制
 	 * @param	g	画布
+	 * @param	lineColor	线条颜色
+	 * @param	pointColor	锚点颜色
 	 */
-	public function debugDraw(g:Graphics):void
+	public function debugDraw(g:Graphics, lineColor:String = "#ff0000", pointColor:String="#ff0000"):void
 	{
 		if (!g) return;
 		g.drawLine(this.x + this.upLeftPoint.x, 
 					this.y + this.upLeftPoint.y,
 					this.x + this.upRightPoint.x,
 					this.y + this.upRightPoint.y, 
-					"#ff0000");
+					lineColor);
 					
 		g.drawLine(this.x + this.upLeftPoint.x, 
 					this.y + this.upLeftPoint.y,
 					this.x + this.downleftPoint.x,
 					this.y + this.downleftPoint.y, 
-					"#ff0000");
+					lineColor);
 					
 		g.drawLine(this.x + this.downleftPoint.x, 
 					this.y + this.downleftPoint.y,
 					this.x + this.downRightPoint.x,
 					this.y + this.downRightPoint.y, 
-					"#ff0000");
+					lineColor);
 		
 		g.drawLine(this.x + this.upRightPoint.x, 
 					this.y + this.upRightPoint.y,
 					this.x + this.downRightPoint.x,
 					this.y + this.downRightPoint.y, 
-					"#ff0000");
+					lineColor);
 					
-		g.drawCircle(this.x, this.y, 4, "#ff0000");
+		g.drawCircle(this.x, this.y, 4, pointColor);
 	}
 }
 }
