@@ -378,53 +378,16 @@ var Laya=window.Laya=(function(window,document){
 
 
 	/**
-	*...测试类
-	*@author Kanon
-	*/
-	//class Platform2DTest
-	var Platform2DTest=(function(){
-		function Platform2DTest(){
-			this.spt=null;
-			this.spt2=null;
-			this.face=null;
-			Laya.init(1136,640);
-			this.face=new Surface(150,20,300,180,0,150);
-			this.face.x=100;
-			this.face.y=100;
-			this.spt=new Sprite();
-			this.spt2=new Sprite();
-			Laya.stage.addChild(this.spt);
-			Laya.stage.addChild(this.spt2);
-			Laya.timer.frameLoop(1,this,this.loop);
-			this.face.debugDraw(this.spt.graphics);
-		}
-
-		__class(Platform2DTest,'Platform2DTest');
-		var __proto=Platform2DTest.prototype;
-		__proto.loop=function(){
-			var g=this.spt2.graphics;
-			g.clear();
-			var leftX=this.face.getLeftRange(Laya.stage.mouseY);
-			var rightX=this.face.getRightRange(Laya.stage.mouseY);
-			g.drawLine(0,Laya.stage.mouseY,500,Laya.stage.mouseY,"#ff00ff");
-			g.drawLine(leftX,0,leftX,500,"#ffccff");
-			g.drawLine(rightX,0,rightX,500,"#cc66ff");
-		}
-
-		return Platform2DTest;
-	})()
-
-
-	/**
 	*...地面
 	*包含地面的属性
 	*@author Kanon
 	*/
-	//class Surface
+	//class face.Surface
 	var Surface=(function(){
 		function Surface(upLeft,downLeft,upRight,downRight,up,down){
 			this.x=0;
 			this.y=0;
+			this.z=0;
 			this.leftBlock=false;
 			this.rightBlock=false;
 			this.upBlock=false;
@@ -451,7 +414,7 @@ var Laya=window.Laya=(function(window,document){
 				throw Error("surface is not parallelogram");
 		}
 
-		__class(Surface,'Surface');
+		__class(Surface,'face.Surface');
 		var __proto=Surface.prototype;
 		/**
 		*获取左边边界坐标
@@ -492,6 +455,34 @@ var Laya=window.Laya=(function(window,document){
 		}
 
 		/**
+		*是否在横向范围内
+		*@param posY 当前的y坐标
+		*@return
+		*/
+		__proto.inHorizontalRange=function(posY){
+			return posY >=this.y+this.upLeftPoint.y &&
+			posY <=this.y+this.downleftPoint.y
+		}
+
+		/**
+		*是否在上边范围内
+		*@param posX 当前x坐标
+		*/
+		__proto.inUpRange=function(posX){
+			return posX >=this.x+this.upLeftPoint.x &&
+			posX <=this.x+this.upRightPoint.x;
+		}
+
+		/**
+		*是否在下边范围内
+		*@param posX 当前x坐标
+		*/
+		__proto.inDownRange=function(posX){
+			return posX >=this.x+this.downleftPoint.x &&
+			posX <=this.x+this.downRightPoint.x;
+		}
+
+		/**
 		*验证面的合法性
 		*@return
 		*/
@@ -503,6 +494,8 @@ var Laya=window.Laya=(function(window,document){
 		/**
 		*绘制
 		*@param g 画布
+		*@param lineColor 线条颜色
+		*@param pointColor 锚点颜色
 		*/
 		__proto.debugDraw=function(g,lineColor,pointColor){
 			(lineColor===void 0)&& (lineColor="#ff0000");
@@ -528,7 +521,7 @@ var Laya=window.Laya=(function(window,document){
 			this.x+this.downRightPoint.x,
 			this.y+this.downRightPoint.y,
 			lineColor);
-			g.drawCircle(this.x,this.y,4,pointColor);
+			g.drawCircle(this.x,this.y,3,pointColor);
 		}
 
 		/**
@@ -552,7 +545,7 @@ var Laya=window.Laya=(function(window,document){
 		*@return
 		*/
 		__getset(0,__proto,'rightSkew',function(){
-			return MathUtil1.getRotation(this.upRightPoint.x,
+			return MathUtil.getRotation(this.upRightPoint.x,
 			this.upRightPoint.y,
 			this.downRightPoint.x,
 			this.downRightPoint.y);
@@ -579,7 +572,7 @@ var Laya=window.Laya=(function(window,document){
 		*@return
 		*/
 		__getset(0,__proto,'leftSkew',function(){
-			return MathUtil1.getRotation(this.upLeftPoint.x,
+			return MathUtil.getRotation(this.upLeftPoint.x,
 			this.upLeftPoint.y,
 			this.downleftPoint.x,
 			this.downleftPoint.y);
@@ -593,6 +586,86 @@ var Laya=window.Laya=(function(window,document){
 		});
 
 		return Surface;
+	})()
+
+
+	/**
+	*...两个面的链接
+	*@author Kanon
+	*/
+	//class Platform2DTest002
+	var Platform2DTest002=(function(){
+		function Platform2DTest002(){
+			this.spt=null;
+			this.ball=null;
+			this.faceArr=null;
+			this.vx=0;
+			this.vy=0;
+			this.g=.2;
+			this.curFace=null;
+			Laya.init(1136,640);
+			this.spt=new Sprite();
+			this.ball=new Sprite();
+			this.ball.graphics.drawCircle(0,0,3,"#6633ff");
+			this.ball.x=150;
+			this.ball.y=150;
+			this.faceArr=[];
+			Laya.stage.addChild(this.spt);
+			Laya.stage.addChild(this.ball);
+			var startX=80;
+			for (var i=0;i < 3;i++){
+				var face=new Surface(50,0,150,100);
+				face.x=100 *i+startX;
+				face.y=100;
+				if (i==2){
+					face.x=startX-50;
+					face.y=200;
+				}
+				this.faceArr.push(face);
+			}
+			this.curFace=this.faceArr[0];
+			Laya.stage.on("keydown",this,this.onKeyDown);
+			Laya.stage.on("keyup",this,this.onKeyUp);
+			Laya.timer.frameLoop(1,this,this.loop);
+		}
+
+		__class(Platform2DTest002,'Platform2DTest002');
+		var __proto=Platform2DTest002.prototype;
+		__proto.onKeyUp=function(e){
+			var keyCode=e["keyCode"];
+			if (keyCode==39 || keyCode==37)this.vx=0;
+			if (keyCode==38 || keyCode==40)this.vy=0;
+		}
+
+		__proto.onKeyDown=function(e){
+			var keyCode=e["keyCode"];
+			if (keyCode==39)this.vx=2;
+			else if (keyCode==37)this.vx=-2;
+			if (keyCode==38)this.vy=-2;
+			else if (keyCode==40)this.vy=2;
+		}
+
+		__proto.updateFace=function(){
+			this.spt.graphics.clear();
+			var count=this.faceArr.length;
+			for (var i=0;i < count;i++){
+				var face=this.faceArr[i];
+				face.debugDraw(this.spt.graphics);
+			}
+		}
+
+		__proto.updateMouse=function(){
+			this.ball.x+=this.vx;
+			this.ball.y+=this.vy;
+			if(!this.curFace)this.vy+=this.g;
+		}
+
+		__proto.loop=function(){
+			this.updateFace();
+			this.updateMouse();
+		}
+
+		return Platform2DTest002;
 	})()
 
 
@@ -3269,9 +3342,9 @@ var Laya=window.Laya=(function(window,document){
 	*<code>MathUtil</code> 是一个数据处理工具类。
 	*/
 	//class laya.maths.MathUtil
-	var MathUtil1=(function(){
+	var MathUtil=(function(){
 		function MathUtil(){};
-		__class(MathUtil,'laya.maths.MathUtil',null,'MathUtil1');
+		__class(MathUtil,'laya.maths.MathUtil');
 		MathUtil.subtractVector3=function(l,r,o){
 			o[0]=l[0]-r[0];
 			o[1]=l[1]-r[1];
@@ -14813,6 +14886,6 @@ var Laya=window.Laya=(function(window,document){
 
 
 	Laya.__init([EventDispatcher,LoaderManager,Render,Browser,LocalStorage,Timer]);
-	new Platform2DTest();
+	new Platform2DTest002();
 
 })(window,document,Laya);

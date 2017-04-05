@@ -1,4 +1,4 @@
-package 
+package face 
 {
 import laya.display.Graphics;
 import laya.maths.Point;
@@ -14,6 +14,8 @@ public class Surface
 	public var x:Number = 0;
 	//y坐标
 	public var y:Number = 0;
+	//z坐标
+	public var z:Number = 0;
 	//左边是否阻碍
 	public var leftBlock:Boolean;
 	//右边是否是阻碍
@@ -163,6 +165,36 @@ public class Surface
 									this.downRightPoint.y);
 	}
 	
+	/**
+	 * 是否在横向范围内
+	 * @param	posY	当前的y坐标
+	 * @return
+	 */
+	public function inHorizontalRange(posY:Number):Boolean
+	{
+		return posY >= this.y + this.upLeftPoint.y && 
+				posY <= this.y + this.downleftPoint.y
+	}
+
+	/**
+	 * 是否在上边范围内
+	 * @param	posX	当前x坐标
+	 */
+	public function inUpRange(posX:Number):void
+	{
+		return posX >= this.x + this.upLeftPoint.x && 
+				posX <= this.x + this.upRightPoint.x;
+	}
+	
+	/**
+	 * 是否在下边范围内
+	 * @param	posX	当前x坐标
+	 */
+	public function inDownRange(posX:Number):void
+	{
+		return posX >= this.x + this.downleftPoint.x && 
+				posX <= this.x + this.downRightPoint.x;
+	}
 	
 	/**
 	 * 验证面的合法性
@@ -173,7 +205,6 @@ public class Surface
 		return this.upLeftPoint.y == this.upRightPoint.y && 
 			   this.downleftPoint.y == this.downRightPoint.y;
 	}
-	
 	
 	/**
 	 * 绘制
@@ -208,7 +239,7 @@ public class Surface
 					this.y + this.downRightPoint.y, 
 					lineColor);
 					
-		g.drawCircle(this.x, this.y, 4, pointColor);
+		g.drawCircle(this.x, this.y, 3, pointColor);
 	}
 }
 }
