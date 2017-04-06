@@ -10,47 +10,36 @@ import laya.utils.Stat;
  */
 public class Platform2DTest 
 {
+	private var spt:Sprite;
+	private var spt2:Sprite;
+	private var face:Surface;
 	public function Platform2DTest() 
 	{
 		Laya.init(1136, 640);
 		//Stat.show(0, 0);
-		var face:Surface = new Surface(100, 0, 200, 100);
-		trace(face.getLeftRange(50));
+		this.face = new Surface(150, 20, 300, 180, 0, 150);
+		this.face.x = 100;
+		this.face.y = 100;
 		
-		var spt:Sprite = new Sprite();
-		var g:Graphics = spt.graphics;
-		Laya.stage.addChild(spt);
+		this.spt = new Sprite();
+		this.spt2 = new Sprite();
+		Laya.stage.addChild(this.spt);
+		Laya.stage.addChild(this.spt2);
+		Laya.timer.frameLoop(1, this, loop);
+		this.face.debugDraw(this.spt.graphics);
+	}
+	
+	private function loop():void 
+	{
+		var g:Graphics = this.spt2.graphics;
+		g.clear();
+		var leftX:Number = this.face.getLeftRange(Laya.stage.mouseY);
+		var rightX:Number = this.face.getRightRange(Laya.stage.mouseY);
 		
+		g.drawLine(0, Laya.stage.mouseY, 500, Laya.stage.mouseY, "#ff00ff");
 		
-		g.drawLine(face.upLeftPoint.x, 
-					face.upLeftPoint.y,
-					face.upRightPoint.x,
-					face.upRightPoint.y, 
-					"#ff0000");
-					
-		g.drawLine(face.upLeftPoint.x, 
-					face.upLeftPoint.y,
-					face.downleftPoint.x,
-					face.downleftPoint.y, 
-					"#ff0000");
-					
-		g.drawLine(face.downleftPoint.x, 
-					face.downleftPoint.y,
-					face.downRightPoint.x,
-					face.downRightPoint.y, 
-					"#ff0000");
-		
-		g.drawLine(face.upRightPoint.x, 
-					face.upRightPoint.y,
-					face.downRightPoint.x,
-					face.downRightPoint.y, 
-					"#ff0000");
-					
-					
-		g.drawLine(0, 50,
-					300,
-					50, 
-					"#ff00ff");
+		g.drawLine(leftX, 0, leftX,	500, "#ffccff");
+		g.drawLine(rightX, 0, rightX,	500, "#cc66ff");
 	}
 }
 }

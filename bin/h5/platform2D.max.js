@@ -384,39 +384,33 @@ var Laya=window.Laya=(function(window,document){
 	//class Platform2DTest
 	var Platform2DTest=(function(){
 		function Platform2DTest(){
+			this.spt=null;
+			this.spt2=null;
+			this.face=null;
 			Laya.init(1136,640);
-			var face=new Surface(100,0,200,100);
-			console.log(face.getLeftRange(50));
-			var spt=new Sprite();
-			var g=spt.graphics;
-			Laya.stage.addChild(spt);
-			g.drawLine(face.upLeftPoint.x,
-			face.upLeftPoint.y,
-			face.upRightPoint.x,
-			face.upRightPoint.y,
-			"#ff0000");
-			g.drawLine(face.upLeftPoint.x,
-			face.upLeftPoint.y,
-			face.downleftPoint.x,
-			face.downleftPoint.y,
-			"#ff0000");
-			g.drawLine(face.downleftPoint.x,
-			face.downleftPoint.y,
-			face.downRightPoint.x,
-			face.downRightPoint.y,
-			"#ff0000");
-			g.drawLine(face.upRightPoint.x,
-			face.upRightPoint.y,
-			face.downRightPoint.x,
-			face.downRightPoint.y,
-			"#ff0000");
-			g.drawLine(0,50,
-			300,
-			50,
-			"#ff00ff");
+			this.face=new Surface(150,20,300,180,0,150);
+			this.face.x=100;
+			this.face.y=100;
+			this.spt=new Sprite();
+			this.spt2=new Sprite();
+			Laya.stage.addChild(this.spt);
+			Laya.stage.addChild(this.spt2);
+			Laya.timer.frameLoop(1,this,this.loop);
+			this.face.debugDraw(this.spt.graphics);
 		}
 
 		__class(Platform2DTest,'Platform2DTest');
+		var __proto=Platform2DTest.prototype;
+		__proto.loop=function(){
+			var g=this.spt2.graphics;
+			g.clear();
+			var leftX=this.face.getLeftRange(Laya.stage.mouseY);
+			var rightX=this.face.getRightRange(Laya.stage.mouseY);
+			g.drawLine(0,Laya.stage.mouseY,500,Laya.stage.mouseY,"#ff00ff");
+			g.drawLine(leftX,0,leftX,500,"#ffccff");
+			g.drawLine(rightX,0,rightX,500,"#cc66ff");
+		}
+
 		return Platform2DTest;
 	})()
 
@@ -431,8 +425,6 @@ var Laya=window.Laya=(function(window,document){
 		function Surface(upLeft,downLeft,upRight,downRight,up,down){
 			this.x=0;
 			this.y=0;
-			this._leftSkew=0;
-			this.rightkew=0;
 			this.leftBlock=false;
 			this.rightBlock=false;
 			this.upBlock=false;
@@ -455,6 +447,8 @@ var Laya=window.Laya=(function(window,document){
 			this.upRightPoint=new Point(upRight,up);
 			this.downleftPoint=new Point(downLeft,down);
 			this.downRightPoint=new Point(downRight,down);
+			if (!this.validate())
+				throw Error("surface is not parallelogram");
 		}
 
 		__class(Surface,'Surface');
@@ -465,14 +459,74 @@ var Laya=window.Laya=(function(window,document){
 		*@return 左边边界的坐标
 		*/
 		__proto.getLeftRange=function(posY){
-			if (this.leftSkew==90)return this.upLeftPoint.x;
-			var rand=this.leftSkew *Math.PI / 180;
-			console.log(" this.leftSkew",this.leftSkew);
-			var vx=this.height / Math.tan(rand);
-			console.log(vx);
-			var sh=this.y+this.height-(posY-this.y);
-			var dx=sh / Math.tan(rand);
-			return this.x+dx;
+			if (Math.abs(this.leftSkew)==90)return this.x+this.upLeftPoint.x;
+			var skew=this.leftSkew;
+			if (skew > 90)skew=180-this.leftSkew;
+			var rand=skew *Math.PI / 180;
+			var sh=this.y+this.upLeftPoint.y+this.height-posY;
+			var dx=NaN;
+			if (this.leftSkew < 90)dx=this.height / Math.tan(rand)-sh / Math.tan(rand);
+			else dx=sh / Math.tan(rand);
+			var leftX=this.upLeftPoint.x;
+			if (this.leftSkew > 90)leftX=this.downleftPoint.x;
+			return this.x+leftX+dx;
+		}
+
+		/**
+		*获取右边边界的坐标
+		*@param posY 当前在这个face上的y坐标
+		*@return 右边边界的坐标
+		*/
+		__proto.getRightRange=function(posY){
+			if (Math.abs(this.rightSkew)==90)return this.x+this.upRightPoint.x;
+			var skew=this.rightSkew;
+			if (skew > 90)skew=180-this.rightSkew;
+			var rand=skew *Math.PI / 180;
+			var sh=this.y+this.upLeftPoint.y+this.height-posY;
+			var dx=NaN;
+			if (this.rightSkew < 90)dx=this.height / Math.tan(rand)-sh / Math.tan(rand);
+			else dx=sh / Math.tan(rand);
+			var rightX=this.upRightPoint.x;
+			if (this.rightSkew > 90)rightX=this.downRightPoint.x;
+			return this.x+rightX+dx;
+		}
+
+		/**
+		*验证面的合法性
+		*@return
+		*/
+		__proto.validate=function(){
+			return this.upLeftPoint.y==this.upRightPoint.y &&
+			this.downleftPoint.y==this.downRightPoint.y;
+		}
+
+		/**
+		*绘制
+		*@param g 画布
+		*/
+		__proto.debugDraw=function(g){
+			if (!g)return;
+			g.drawLine(this.x+this.upLeftPoint.x,
+			this.y+this.upLeftPoint.y,
+			this.x+this.upRightPoint.x,
+			this.y+this.upRightPoint.y,
+			"#ff0000");
+			g.drawLine(this.x+this.upLeftPoint.x,
+			this.y+this.upLeftPoint.y,
+			this.x+this.downleftPoint.x,
+			this.y+this.downleftPoint.y,
+			"#ff0000");
+			g.drawLine(this.x+this.downleftPoint.x,
+			this.y+this.downleftPoint.y,
+			this.x+this.downRightPoint.x,
+			this.y+this.downRightPoint.y,
+			"#ff0000");
+			g.drawLine(this.x+this.upRightPoint.x,
+			this.y+this.upRightPoint.y,
+			this.x+this.downRightPoint.x,
+			this.y+this.downRightPoint.y,
+			"#ff0000");
+			g.drawCircle(this.x,this.y,4,"#ff0000");
 		}
 
 		/**

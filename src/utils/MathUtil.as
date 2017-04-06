@@ -1,6 +1,6 @@
 ﻿package utils
 {
-	import laya.maths.Point;
+import laya.maths.Point;
 public class MathUtil
 {
 
