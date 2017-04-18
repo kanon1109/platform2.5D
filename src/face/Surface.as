@@ -32,6 +32,8 @@ public class Surface
 	public var downleftPoint:Point;
 	//右下点坐标
 	public var downRightPoint:Point;
+	//名字
+	public var name:String;
 	//左边高
 	protected var _leftH:Number = 0;
 	//右边高
@@ -81,6 +83,22 @@ public class Surface
 	{
 		_upH = value;
 		this.upBlock = false;
+	}
+	
+	/**
+	 * 获取上边坐标
+	 */
+	public function get upPosY():Number
+	{
+		return this.y + this.upLeftPoint.y;
+	}
+	
+	/**
+	 * 获取下边坐标
+	 */
+	public function get downPosY():Number
+	{
+		return this.y + this.downRightPoint.y;
 	}
 	
 	/**
@@ -170,7 +188,7 @@ public class Surface
 	 * @param	posY	当前的y坐标
 	 * @return
 	 */
-	public function inHorizontalRange(posY:Number):Boolean
+	public function inVerticalRange(posY:Number):Boolean
 	{
 		return posY >= this.y + this.upLeftPoint.y && 
 				posY <= this.y + this.downleftPoint.y
@@ -204,6 +222,20 @@ public class Surface
 	{
 		return this.upLeftPoint.y == this.upRightPoint.y && 
 			   this.downleftPoint.y == this.downRightPoint.y;
+	}
+	
+	/**
+	 * 是否在面的范围内
+	 * @param	posX		x坐标
+	 * @param	posY		y坐标
+	 * @param	thick		y坐标
+	 * @return
+	 */
+	public function inFaceRage(posX:Number, posY:Number, thick:Number = 0):Boolean
+	{
+		var leftX:Number = this.getLeftRange(posY);
+		var rightX:Number = this.getRightRange(posY);
+		return posX >= leftX - thick && posX <= rightX + thick && this.inVerticalRange(posY);
 	}
 	
 	/**

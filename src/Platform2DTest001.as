@@ -41,7 +41,7 @@ public class Platform2DTest001
 		g.drawLine(leftX, 0, leftX,	500, "#ffccff");
 		g.drawLine(rightX, 0, rightX,	500, "#cc66ff");
 		
-		trace("inHorizontalRange", this.face.inHorizontalRange(Laya.stage.mouseY));
+		trace("inHorizontalRange", this.face.inVerticalRange(Laya.stage.mouseY));
 		trace("inUpRange", this.face.inUpRange(Laya.stage.mouseX));
 		trace("inDownRange", this.face.inDownRange(Laya.stage.mouseX));
 	}
