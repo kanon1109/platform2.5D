@@ -233,6 +233,7 @@ public class Surface
 	 */
 	public function inFaceRage(posX:Number, posY:Number, thick:Number = 0):Boolean
 	{
+		//获取左右x的范围
 		var leftX:Number = this.getLeftRange(posY);
 		var rightX:Number = this.getRightRange(posY);
 		return posX >= leftX - thick && posX <= rightX + thick && this.inVerticalRange(posY);

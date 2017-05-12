@@ -79,11 +79,16 @@ public class Body
 	{
 		var thich:Number = this.thick;
 		if (this.face && !this.face.inFaceRage(this.x, this.y, this.thick))
+		{
+			trace("out");
 			this.face = null;
+		}
 		if (!this.face)
 		{
+			//TODO 判断跳跃后y坐标应该到达的位置 才开始搜索
 			this.face = FaceMangager.seachFace(this.x, this.y, 
-											   this.prevX, this.prevY);
+											   this.prevX, this.prevY, 
+											   this.thick);
 		}
 	}
 	
@@ -97,6 +102,17 @@ public class Body
 			this.display.x = this.x;
 			this.display.y = this.y;
 		}
+	}
+	
+	/**
+	 * 跳跃
+	 * @param	speed
+	 */
+	public function jump(speed:Number):void
+	{
+		if (!this.face) return;
+		this.jumpVy = speed;
+		this.face = null;
 	}
 	
 	/**

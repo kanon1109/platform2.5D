@@ -7,10 +7,10 @@ import laya.events.Event;
 import laya.utils.Stat;
 import manager.FaceMangager;
 /**
- * ...两个面的链接
+ * ...面之间的跳跃
  * @author Kanon
  */
-public class Platform2DTest002 
+public class Platform2DTest003 
 {
 	private var spt:Sprite;
 	private var ball:Sprite;
@@ -20,7 +20,7 @@ public class Platform2DTest002
 	private var g:Number = .2;
 	//刚体
 	private var body:Body;
-	public function Platform2DTest002() 
+	public function Platform2DTest003() 
 	{
 		Laya.init(1136, 640);
 		Stat.show(0, 0);
@@ -85,11 +85,15 @@ public class Platform2DTest002
 	private function onKeyDown(e:*=null):void 
 	{
 		var keyCode:int = e["keyCode"];
+		trace(keyCode);
 		if (keyCode == 39) this.body.vx = 2;
 		else if (keyCode == 37) this.body.vx = -2;
 		
 		if (keyCode == 38) this.body.vy = -2;
 		else if (keyCode == 40) this.body.vy = 2;
+		
+		//jump
+		if (keyCode == 32) this.body.jump(10);
 	}
 	
 	private function loop():void 

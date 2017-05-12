@@ -435,8 +435,15 @@ var Laya=window.Laya=(function(window,document){
 		*/
 		__proto.updateFace=function(){
 			var thich=this.thick;
-			if (this.face && !this.face.inFaceRage(this.x,this.y,this.thick))
+			if (this.face && !this.face.inFaceRage(this.x,this.y,this.thick)){
+				console.log("out");
 				this.face=null;
+			}
+			if (!this.face){
+				this.face=FaceMangager.seachFace(this.x,this.y,
+				this.prevX,this.prevY,
+				this.thick);
+			}
 		}
 
 		/**
@@ -447,6 +454,16 @@ var Laya=window.Laya=(function(window,document){
 				this.display.x=this.x;
 				this.display.y=this.y;
 			}
+		}
+
+		/**
+		*跳跃
+		*@param speed
+		*/
+		__proto.jump=function(speed){
+			if (!this.face)return;
+			this.jumpVy=speed;
+			this.face=null;
 		}
 
 		/**
@@ -739,18 +756,13 @@ var Laya=window.Laya=(function(window,document){
 			}
 		}
 
-		FaceMangager.seachFace=function(x,y,prevX,prevY){
+		FaceMangager.seachFace=function(x,y,prevX,prevY,thick){
+			(thick===void 0)&& (thick=0);
 			var count=FaceMangager.faceAry.length;
 			for (var i=0;i < count;i++){
 				var face=FaceMangager.faceAry[i];
-				if (face.inFaceRage(x,y)){
-					console.log("x, y",x,y);
-					console.log("prevX, prevY",prevX,prevY);
-					console.log("face name" ,face.name,face.inFaceRage(x,y));
-					console.log("prev " ,face.name,face.inFaceRage(prevX,prevY));
-				}
-				if (face.inFaceRage(x,y)){
-					console.log("inin ")
+				if (face.inFaceRage(x,y,thick)){
+					console.log("inin ");
 					return face;
 				}
 			}
@@ -775,12 +787,12 @@ var Laya=window.Laya=(function(window,document){
 
 
 	/**
-	*...两个面的链接
+	*...面之间的跳跃
 	*@author Kanon
 	*/
-	//class Platform2DTest002
-	var Platform2DTest002=(function(){
-		function Platform2DTest002(){
+	//class Platform2DTest003
+	var Platform2DTest003=(function(){
+		function Platform2DTest003(){
 			this.spt=null;
 			this.ball=null;
 			this.faceArr=null;
@@ -801,14 +813,16 @@ var Laya=window.Laya=(function(window,document){
 			this.body.thick=10;
 			this.body.display=this.ball;
 			var startX=80;
+			var gapH=21;
 			for (var i=0;i < 3;i++){
 				var face=new Surface(50,0,150,100);
 				face.name="face"+i;
-				face.x=100 *i+startX;
+				face.x=(100+gapH)*i+startX;
 				face.y=100;
 				if (i==0 || i==1)
 					face.upBlock=true;
 				if (i==0){
+					face.leftBlock=true;
 				}
 				if (i==1){
 					face.rightBlock=true;
@@ -829,8 +843,8 @@ var Laya=window.Laya=(function(window,document){
 			Laya.timer.frameLoop(1,this,this.loop);
 		}
 
-		__class(Platform2DTest002,'Platform2DTest002');
-		var __proto=Platform2DTest002.prototype;
+		__class(Platform2DTest003,'Platform2DTest003');
+		var __proto=Platform2DTest003.prototype;
 		__proto.onKeyUp=function(e){
 			var keyCode=e["keyCode"];
 			if (keyCode==39 || keyCode==37)this.body.vx=0;
@@ -839,10 +853,12 @@ var Laya=window.Laya=(function(window,document){
 
 		__proto.onKeyDown=function(e){
 			var keyCode=e["keyCode"];
+			console.log(keyCode);
 			if (keyCode==39)this.body.vx=2;
 			else if (keyCode==37)this.body.vx=-2;
 			if (keyCode==38)this.body.vy=-2;
 			else if (keyCode==40)this.body.vy=2;
+			if (keyCode==32)this.body.jump(10);
 		}
 
 		__proto.loop=function(){
@@ -852,7 +868,7 @@ var Laya=window.Laya=(function(window,document){
 				this.body.face.debugDraw(this.spt.graphics,"#0000ff");
 		}
 
-		return Platform2DTest002;
+		return Platform2DTest003;
 	})()
 
 
@@ -15072,7 +15088,7 @@ var Laya=window.Laya=(function(window,document){
 	})(FileBitmap)
 
 
-	Laya.__init([LoaderManager,EventDispatcher,Render,Browser,LocalStorage,Timer]);
-	new Platform2DTest002();
+	Laya.__init([EventDispatcher,LoaderManager,Render,Browser,LocalStorage,Timer]);
+	new Platform2DTest003();
 
 })(window,document,Laya);

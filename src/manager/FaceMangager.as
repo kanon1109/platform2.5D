@@ -58,20 +58,22 @@ public class FaceMangager
 	 * @param	y		当前坐标y
 	 * @param	prevX	上一次坐标x
 	 * @param	prevY	上一次坐标y
+	 * @param	thick	厚度
 	 * @return	搜索到的面
 	 */
 	public static function seachFace(x:Number, 
 									 y:Number, 
 									 prevX:Number, 
-									 prevY:Number):Surface
+									 prevY:Number, 
+									 thick:Number = 0):Surface
 	{
 		var count:int = faceAry.length;
 		for (var i:int = 0; i < count; i++) 
 		{
 			var face:Surface = faceAry[i];
-			if (face.inFaceRage(x, y))
+			if (face.inFaceRage(x, y, thick))
 			{
-				trace("inin ")
+				trace("inin ");
 				return face;
 			}
 		}
