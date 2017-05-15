@@ -379,19 +379,26 @@ var Laya=window.Laya=(function(window,document){
 
 	/**
 	*...物体
+	*TODO
+	*跳跃时不判断face的cage
+	*跳跃后触底在判断face
 	*@author Kanon
 	*/
 	//class body.Body
 	var Body=(function(){
 		function Body(){
+			this.isJump=false;
+			this.jumpDirect=0;
 			this.vx=0;
 			this.vy=0;
 			this.jumpVy=0;
+			this.jumpY=0;
 			this.x=0;
 			this.y=0;
 			this.prevX=0;
 			this.prevY=0;
-			this.g=2;
+			this.prevZ=0;
+			this.g=.98;
 			this.face=null;
 			this.display=null;
 			this.thick=0;
@@ -439,10 +446,22 @@ var Laya=window.Laya=(function(window,document){
 				console.log("out");
 				this.face=null;
 			}
-			if (!this.face){
-				this.face=FaceMangager.seachFace(this.x,this.y,
-				this.prevX,this.prevY,
-				this.thick);
+			if (!this.isJump){
+				if (!this.face){
+					this.face=FaceMangager.seachFace(this.x,this.y,this.thick);
+				}
+			}
+			else{
+				console.log("inin");
+				if (this.jumpDirect==3){
+					var face=FaceMangager.seachFaceByDepth(this.x,this.y,this.prevZ,this.thick,0);
+					if (face){
+						if (face.z > this.prevZ){
+						}
+						else if (face.z==this.prevZ){
+						}
+					}
+				}
 			}
 		}
 
@@ -461,8 +480,13 @@ var Laya=window.Laya=(function(window,document){
 		*@param speed
 		*/
 		__proto.jump=function(speed){
-			if (!this.face)return;
-			this.jumpVy=speed;
+			if (this.isJump || !this.face)return;
+			if (this.y==this.face.upPosY)
+				this.jumpDirect=3;
+			this.jumpY=this.y;
+			this.jumpVy=-speed;
+			this.isJump=true;
+			this.prevZ=this.face.z;
 			this.face=null;
 		}
 
@@ -479,6 +503,8 @@ var Laya=window.Laya=(function(window,document){
 		Body.NONE=0;
 		Body.LEFT=1;
 		Body.RIGHT=2;
+		Body.UP=3;
+		Body.DOWN=4;
 		return Body;
 	})()
 
@@ -490,7 +516,7 @@ var Laya=window.Laya=(function(window,document){
 	*/
 	//class face.Surface
 	var Surface=(function(){
-		function Surface(upLeft,downLeft,upRight,downRight,up,down){
+		function Surface(upLeftX,downLeftX,upRightX,downRightX,upY,downY){
 			this.x=0;
 			this.y=0;
 			this.z=0;
@@ -507,16 +533,16 @@ var Laya=window.Laya=(function(window,document){
 			this._rightH=0;
 			this._upH=0;
 			this._downH=0;
-			(upLeft===void 0)&& (upLeft=0);
-			(downLeft===void 0)&& (downLeft=0);
-			(upRight===void 0)&& (upRight=100);
-			(downRight===void 0)&& (downRight=100);
-			(up===void 0)&& (up=0);
-			(down===void 0)&& (down=100);
-			this.upLeftPoint=new Point(upLeft,up);
-			this.upRightPoint=new Point(upRight,up);
-			this.downleftPoint=new Point(downLeft,down);
-			this.downRightPoint=new Point(downRight,down);
+			(upLeftX===void 0)&& (upLeftX=0);
+			(downLeftX===void 0)&& (downLeftX=0);
+			(upRightX===void 0)&& (upRightX=100);
+			(downRightX===void 0)&& (downRightX=100);
+			(upY===void 0)&& (upY=0);
+			(downY===void 0)&& (downY=100);
+			this.upLeftPoint=new Point(upLeftX,upY);
+			this.upRightPoint=new Point(upRightX,upY);
+			this.downleftPoint=new Point(downLeftX,downY);
+			this.downRightPoint=new Point(downRightX,downY);
 			if (!this.validate())
 				throw Error("surface is not parallelogram");
 		}
@@ -756,13 +782,34 @@ var Laya=window.Laya=(function(window,document){
 			}
 		}
 
-		FaceMangager.seachFace=function(x,y,prevX,prevY,thick){
+		FaceMangager.seachFace=function(x,y,thick){
 			(thick===void 0)&& (thick=0);
 			var count=FaceMangager.faceAry.length;
 			for (var i=0;i < count;i++){
 				var face=FaceMangager.faceAry[i];
 				if (face.inFaceRage(x,y,thick)){
-					console.log("inin ");
+					return face;
+				}
+			}
+			return null;
+		}
+
+		FaceMangager.seachFaceByDepth=function(x,y,z,thick,state){
+			(thick===void 0)&& (thick=0);
+			(state===void 0)&& (state=0);
+			var count=FaceMangager.faceAry.length;
+			for (var i=0;i < count;i++){
+				var face=FaceMangager.faceAry[i];
+				if (state==0){
+					if (face.z < z)continue
+						}
+				else if (state==1){
+					if (face.z !=z)continue
+						}
+				else if (state==2){
+					if (face.z > z)continue
+						}
+				if (face.inFaceRage(x,y,thick)){
 					return face;
 				}
 			}
@@ -814,30 +861,51 @@ var Laya=window.Laya=(function(window,document){
 			this.body.display=this.ball;
 			var startX=80;
 			var gapH=21;
-			for (var i=0;i < 3;i++){
-				var face=new Surface(50,0,150,100);
-				face.name="face"+i;
-				face.x=(100+gapH)*i+startX;
-				face.y=100;
-				if (i==0 || i==1)
-					face.upBlock=true;
-				if (i==0){
-					face.leftBlock=true;
-				}
-				if (i==1){
-					face.rightBlock=true;
-					face.downBlock=true;
-				}
-				if (i==2){
-					face.leftBlock=true;
-					face.rightBlock=true;
-					face.downBlock=true;
-					face.x=startX-50;
-					face.y=200;
-				}
-				if (i==0)this.body.face=face;
-				FaceMangager.add(face);
-			}
+			var face=new Surface(50,0,150,100,0,50);
+			face.name="downface1";
+			face.x=startX-50;
+			face.y=280;
+			face.z=0;
+			face.upBlock=true;
+			face.leftBlock=true;
+			face.downBlock=true;
+			FaceMangager.add(face);
+			face=new Surface(50,0,150,100,0,50);
+			face.name="downface2";
+			face.x=startX+100-50;
+			face.y=280;
+			face.z=0;
+			face.upBlock=true;
+			face.rightBlock=true;
+			face.downBlock=true;
+			FaceMangager.add(face);
+			face=new Surface(50,0,150,100,0,50);
+			face.name="middleface1";
+			face.x=startX;
+			face.y=200;
+			face.z=1;
+			face.upBlock=true;
+			face.rightBlock=true;
+			face.downBlock=true;
+			FaceMangager.add(face);
+			face=new Surface(50,0,150,100,0,50);
+			face.name="middleface2";
+			face.x=startX+100;
+			face.y=230;
+			face.z=1;
+			face.upBlock=true;
+			face.rightBlock=true;
+			face.downBlock=true;
+			FaceMangager.add(face);
+			face=new Surface(50,0,150,100,0,50);
+			face.name="upface1";
+			face.x=startX+50;
+			face.y=120;
+			face.z=2;
+			face.upBlock=true;
+			face.rightBlock=true;
+			face.downBlock=true;
+			FaceMangager.add(face);
 			Laya.stage.on("keydown",this,this.onKeyDown);
 			Laya.stage.on("keyup",this,this.onKeyUp);
 			Laya.timer.frameLoop(1,this,this.loop);
@@ -858,7 +926,7 @@ var Laya=window.Laya=(function(window,document){
 			else if (keyCode==37)this.body.vx=-2;
 			if (keyCode==38)this.body.vy=-2;
 			else if (keyCode==40)this.body.vy=2;
-			if (keyCode==32)this.body.jump(10);
+			if (keyCode==32)this.body.jump(12);
 		}
 
 		__proto.loop=function(){

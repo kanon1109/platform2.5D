@@ -42,14 +42,14 @@ public class Surface
 	protected var _upH:Number = 0;
 	//下边高（一般为0）
 	protected var _downH:Number = 0;
-	public function Surface(upLeft:Number = 0, downLeft:Number = 0, 
-							upRight:Number = 100, downRight:Number = 100, 
-							up:Number = 0, down:Number = 100) 
+	public function Surface(upLeftX:Number = 0, downLeftX:Number = 0, 
+							upRightX:Number = 100, downRightX:Number = 100, 
+							upY:Number = 0, downY:Number = 100) 
 	{
-		this.upLeftPoint = new Point(upLeft, up);
-		this.upRightPoint = new Point(upRight, up);
-		this.downleftPoint = new Point(downLeft, down);
-		this.downRightPoint = new Point(downRight, down);
+		this.upLeftPoint = new Point(upLeftX, upY);
+		this.upRightPoint = new Point(upRightX, upY);
+		this.downleftPoint = new Point(downLeftX, downY);
+		this.downRightPoint = new Point(downRightX, downY);
 		
 		if (!this.validate())
 			throw Error("surface is not parallelogram");

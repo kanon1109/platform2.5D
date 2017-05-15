@@ -36,17 +36,17 @@ public class Platform2DTest003
 		this.body.y = 200;
 		this.body.thick = 10;
 		this.body.display = ball;
-		
-		var startX:Number = 80;
-		var gapH:Number = 21;
-		for (var i:int = 0; i < 3; i++) 
+		/*for (var i:int = 0; i < 3; i++) 
 		{
 			var face:Surface = new Surface(50, 0, 150, 100);
 			face.name = "face" + i;
 			face.x = (100 + gapH) * i + startX ;
 			face.y = 100;
 			if (i == 0 || i == 1)
+			{
 				face.upBlock = true;
+				face.z = 0;
+			}
 				
 			if (i == 0)
 			{
@@ -66,10 +66,71 @@ public class Platform2DTest003
 				face.downBlock = true;
 				face.x = startX - 50;
 				face.y = 200;
+				face.z = 1;
 			}
 			if (i == 0) this.body.face = face;
 			FaceMangager.add(face);
-		}
+		}*/
+		
+		//最下层
+		var startX:Number = 80;
+		var gapH:Number = 21;
+		var face:Surface = new Surface(50, 0, 150, 100, 0, 50);
+		face.name = "downface1";
+		face.x = startX - 50;
+		face.y = 280;
+		face.z = 0;
+		face.upBlock = true;
+		face.leftBlock = true;
+		face.downBlock = true;
+		FaceMangager.add(face);
+		
+		face = new Surface(50, 0, 150, 100, 0, 50);
+		face.name = "downface2";
+		face.x = startX + 100 - 50;
+		face.y = 280;
+		face.z = 0;
+		face.upBlock = true;
+		face.rightBlock = true;
+		face.downBlock = true;
+		FaceMangager.add(face);
+		
+		
+		//中间层
+		face = new Surface(50, 0, 150, 100, 0, 50);
+		face.name = "middleface1";
+		face.x = startX;
+		face.y = 200;
+		face.z = 1;
+		face.upBlock = true;
+		face.rightBlock = true;
+		face.downBlock = true;
+		FaceMangager.add(face);
+		
+		face = new Surface(50, 0, 150, 100, 0, 50);
+		face.name = "middleface2";
+		face.x = startX + 100;
+		face.y = 230;
+		face.z = 1;
+		face.upBlock = true;
+		face.rightBlock = true;
+		face.downBlock = true;
+		FaceMangager.add(face);
+		
+		//最上层
+		face = new Surface(50, 0, 150, 100, 0, 50);
+		face.name = "upface1";
+		face.x = startX + 50;
+		face.y = 120;
+		face.z = 2;
+		face.upBlock = true;
+		face.rightBlock = true;
+		face.downBlock = true;
+		FaceMangager.add(face);
+		
+		
+		
+		
 		Laya.stage.on(Event.KEY_DOWN, this, onKeyDown);
 		Laya.stage.on(Event.KEY_UP, this, onKeyUp);
 		Laya.timer.frameLoop(1, this, loop);
@@ -93,7 +154,7 @@ public class Platform2DTest003
 		else if (keyCode == 40) this.body.vy = 2;
 		
 		//jump
-		if (keyCode == 32) this.body.jump(10);
+		if (keyCode == 32) this.body.jump(12);
 	}
 	
 	private function loop():void 

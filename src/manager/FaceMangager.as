@@ -56,15 +56,11 @@ public class FaceMangager
 	 * 搜索面
 	 * @param	x		当前坐标x
 	 * @param	y		当前坐标y
-	 * @param	prevX	上一次坐标x
-	 * @param	prevY	上一次坐标y
 	 * @param	thick	厚度
 	 * @return	搜索到的面
 	 */
 	public static function seachFace(x:Number, 
 									 y:Number, 
-									 prevX:Number, 
-									 prevY:Number, 
 									 thick:Number = 0):Surface
 	{
 		var count:int = faceAry.length;
@@ -73,12 +69,50 @@ public class FaceMangager
 			var face:Surface = faceAry[i];
 			if (face.inFaceRage(x, y, thick))
 			{
-				trace("inin ");
 				return face;
 			}
 		}
 		return null;
 	}
+	
+	/**
+	 * 根据深度搜索face
+	 * @param	x		当前坐标x	
+	 * @param	y		当前坐标y
+	 * @param	z		当前face的z坐标
+	 * @param	thick	厚度
+	 * @param	state	搜索状态	0：只搜深度>=当前face的深度，1：同深度跳跃，2只搜索<=当前face深度
+	 */
+	public static function seachFaceByDepth(x:Number, y:Number, z:Number, 
+											thick:Number = 0, state:int = 0)
+	{
+		var count:int = faceAry.length;
+		for (var i:int = 0; i < count; i++) 
+		{
+			var face:Surface = faceAry[i];
+			if (state == 0)
+			{
+				//往上跳跃时
+				if (face.z < z) continue
+			}
+			else if (state == 1)
+			{
+				//同级别跳跃时
+				if (face.z != z) continue
+			}
+			else if (state == 2)
+			{
+				//往下跳跃时
+				if (face.z > z) continue
+			}
+			if (face.inFaceRage(x, y, thick))
+			{
+				return face;
+			}
+		}
+		return null;
+	}
+
 	
 	/**
 	 * debug 所有的face
