@@ -3,12 +3,15 @@ package body
 import face.Surface;
 import laya.display.Node;
 import manager.FaceMangager;
-import manager.FaceMangager;
 /**
  * ...物体
  * TODO 
+ * 跳跃时限制左右移动
  * 跳跃时不判断face的cage
  * 跳跃后触底在判断face
+ * 跳跃判断高度
+ * 跨高度搜索face
+ * 碰壁后反弹
  * @author Kanon
  */
 public class Body 
@@ -41,6 +44,7 @@ public class Body
 	public var g:Number = .98;
 	//当前所在的地面
 	public var face:Surface;
+	public var prevFace:Surface;
 	//显示对象
 	public var display:Node;
 	//厚度
@@ -93,10 +97,7 @@ public class Body
 	{
 		var thich:Number = this.thick;
 		if (this.face && !this.face.inFaceRage(this.x, this.y, this.thick))
-		{
-			trace("out");
 			this.face = null;
-		}
 		if (!this.isJump)
 		{
 			if (!this.face)
@@ -107,26 +108,39 @@ public class Body
 		}
 		else
 		{
-			trace("inin");
-			//TODO 判断是否从当前face的顶部跳跃
-			if (this.jumpDirect == UP)
+			if (this.jumpVy >= 0)
 			{
-				//TODO
-				//根据深度搜索
-				//根据face的深度判断着陆点
-				//可能碰到的face
-				var face:Surface = FaceMangager.seachFaceByDepth(this.x, this.y, this.prevZ, this.thick, 0);
+				/*var face:Surface = FaceMangager.seachFaceRangeByDepth(this.x, this.y, this.prevZ, this.thick, 0);
 				if (face)
 				{
-					if (face.z > this.prevZ)
+					//TODO 判断是否从当前face的顶部跳跃
+					if (this.jumpDirect == UP)
 					{
-						//找到上一层的面
+						//TODO
+						//根据深度搜索
+						//根据face的深度判断着陆点
+						//可能碰到的face
+						var posY:Number = Infinity;
+						if (face.z + 1 == this.prevZ)
+						{
+							//找到上一层的面
+							posY = face.downPosY;
+							trace("in1", this.y, face.downPosY);
+						}
+						if (this.y >= posY)
+						{
+							this.y = posY;
+							this.face = face;
+							this.isJump = false;
+							this.jumpVy = 0;
+							return;
+						}
 					}
-					else if (face.z == this.prevZ)
+					else if (this.jumpDirect == DOWN)
 					{
-						//找到同一层的面
+						
 					}
-				}
+				}*/
 			}
 		}
 	}
@@ -153,11 +167,34 @@ public class Body
 		//在 顶部 跳跃
 		if (this.y == this.face.upPosY)
 			this.jumpDirect = UP;
+		else if (this.y == this.face.downPosY)
+			this.jumpDirect = DOWN;
 		this.jumpY = this.y;
 		this.jumpVy = -speed;
 		this.isJump = true;
 		this.prevZ = this.face.z;
+		this.prevFace = this.face;
 		this.face = null;
+	}
+	
+	/**
+	 * 横向移动
+	 * @param	vx
+	 */
+	public function moveH(vx:Number):void
+	{
+		if (this.isJump) return;
+		this.vx = vx;
+	}
+	
+	/**
+	 * 纵向移动
+	 * @param	vy
+	 */
+	public function moveV(vy:Number):void
+	{
+		if (this.isJump) return;
+		this.vy = vy;
 	}
 	
 	/**

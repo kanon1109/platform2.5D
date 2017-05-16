@@ -93,21 +93,55 @@ public class FaceMangager
 			if (state == 0)
 			{
 				//往上跳跃时
-				if (face.z < z) continue
+				if (face.z < z) continue;
 			}
 			else if (state == 1)
 			{
 				//同级别跳跃时
-				if (face.z != z) continue
+				if (face.z != z) continue;
 			}
 			else if (state == 2)
 			{
 				//往下跳跃时
-				if (face.z > z) continue
+				if (face.z > z) continue;
 			}
 			if (face.inFaceRage(x, y, thick))
 			{
 				return face;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * 根据深度搜索在面范围内的
+	 * @param	x
+	 * @param	z
+	 * @param	state
+	 */
+	public static function seachFaceRangeByDepth(x:Number, z:Number, state:int = 0)
+	{
+		var count:int = faceAry.length;
+		for (var i:int = 0; i < count; i++) 
+		{
+			var face:Surface = faceAry[i];
+			if (state == 0)
+			{
+				//往上跳跃时
+				if (face.z < z) continue;
+				if (face.inDownRange(x)) return face;
+			}
+			else if (state == 1)
+			{
+				//同级别跳跃时
+				if (face.z != z) continue;
+				if (face.inDownRange(x) || face.inUpRange(x)) return face;
+			}
+			else if (state == 2)
+			{
+				//往下跳跃时
+				if (face.z > z) continue;
+				if(face.inUpRange(x)) return face;
 			}
 		}
 		return null;

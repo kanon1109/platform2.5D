@@ -380,8 +380,12 @@ var Laya=window.Laya=(function(window,document){
 	/**
 	*...物体
 	*TODO
+	*跳跃时限制左右移动
 	*跳跃时不判断face的cage
 	*跳跃后触底在判断face
+	*跳跃判断高度
+	*跨高度搜索face
+	*碰壁后反弹
 	*@author Kanon
 	*/
 	//class body.Body
@@ -400,6 +404,7 @@ var Laya=window.Laya=(function(window,document){
 			this.prevZ=0;
 			this.g=.98;
 			this.face=null;
+			this.prevFace=null;
 			this.display=null;
 			this.thick=0;
 			this.direction=0;
@@ -442,25 +447,15 @@ var Laya=window.Laya=(function(window,document){
 		*/
 		__proto.updateFace=function(){
 			var thich=this.thick;
-			if (this.face && !this.face.inFaceRage(this.x,this.y,this.thick)){
-				console.log("out");
+			if (this.face && !this.face.inFaceRage(this.x,this.y,this.thick))
 				this.face=null;
-			}
 			if (!this.isJump){
 				if (!this.face){
 					this.face=FaceMangager.seachFace(this.x,this.y,this.thick);
 				}
 			}
 			else{
-				console.log("inin");
-				if (this.jumpDirect==3){
-					var face=FaceMangager.seachFaceByDepth(this.x,this.y,this.prevZ,this.thick,0);
-					if (face){
-						if (face.z > this.prevZ){
-						}
-						else if (face.z==this.prevZ){
-						}
-					}
+				if (this.jumpVy >=0){
 				}
 			}
 		}
@@ -483,11 +478,32 @@ var Laya=window.Laya=(function(window,document){
 			if (this.isJump || !this.face)return;
 			if (this.y==this.face.upPosY)
 				this.jumpDirect=3;
+			else if (this.y==this.face.downPosY)
+			this.jumpDirect=4;
 			this.jumpY=this.y;
 			this.jumpVy=-speed;
 			this.isJump=true;
 			this.prevZ=this.face.z;
+			this.prevFace=this.face;
 			this.face=null;
+		}
+
+		/**
+		*横向移动
+		*@param vx
+		*/
+		__proto.moveH=function(vx){
+			if (this.isJump)return;
+			this.vx=vx;
+		}
+
+		/**
+		*纵向移动
+		*@param vy
+		*/
+		__proto.moveV=function(vy){
+			if (this.isJump)return;
+			this.vy=vy;
 		}
 
 		/**
@@ -852,6 +868,7 @@ var Laya=window.Laya=(function(window,document){
 			this.spt=new Sprite();
 			this.ball=new Sprite();
 			this.ball.graphics.drawCircle(0,0,10,"#6633ff");
+			this.g=this.spt.graphics;
 			Laya.stage.addChild(this.spt);
 			Laya.stage.addChild(this.ball);
 			this.body=new Body();
@@ -885,6 +902,7 @@ var Laya=window.Laya=(function(window,document){
 			face.y=200;
 			face.z=1;
 			face.upBlock=true;
+			face.leftBlock=true;
 			face.rightBlock=true;
 			face.downBlock=true;
 			FaceMangager.add(face);
@@ -895,6 +913,7 @@ var Laya=window.Laya=(function(window,document){
 			face.z=1;
 			face.upBlock=true;
 			face.rightBlock=true;
+			face.leftH=30;
 			face.downBlock=true;
 			FaceMangager.add(face);
 			face=new Surface(50,0,150,100,0,50);
@@ -908,24 +927,24 @@ var Laya=window.Laya=(function(window,document){
 			FaceMangager.add(face);
 			Laya.stage.on("keydown",this,this.onKeyDown);
 			Laya.stage.on("keyup",this,this.onKeyUp);
-			Laya.timer.frameLoop(1,this,this.loop);
+			Laya.timer.frameLoop(20,this,this.loop);
 		}
 
 		__class(Platform2DTest003,'Platform2DTest003');
 		var __proto=Platform2DTest003.prototype;
 		__proto.onKeyUp=function(e){
 			var keyCode=e["keyCode"];
-			if (keyCode==39 || keyCode==37)this.body.vx=0;
-			if (keyCode==38 || keyCode==40)this.body.vy=0;
+			if (keyCode==39 || keyCode==37)this.body.moveH(0);
+			if (keyCode==38 || keyCode==40)this.body.moveV(0);
 		}
 
 		__proto.onKeyDown=function(e){
 			var keyCode=e["keyCode"];
 			console.log(keyCode);
-			if (keyCode==39)this.body.vx=2;
-			else if (keyCode==37)this.body.vx=-2;
-			if (keyCode==38)this.body.vy=-2;
-			else if (keyCode==40)this.body.vy=2;
+			if (keyCode==39)this.body.moveH(2);
+			else if (keyCode==37)this.body.moveH(-2);
+			if (keyCode==38)this.body.moveV(-2);
+			else if (keyCode==40)this.body.moveV(2);
 			if (keyCode==32)this.body.jump(12);
 		}
 
@@ -936,6 +955,7 @@ var Laya=window.Laya=(function(window,document){
 				this.body.face.debugDraw(this.spt.graphics,"#0000ff");
 		}
 
+		Platform2DTest003.g=null
 		return Platform2DTest003;
 	})()
 

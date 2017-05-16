@@ -2,6 +2,7 @@ package
 {
 import body.Body;
 import face.Surface;
+import laya.display.Graphics;
 import laya.display.Sprite;
 import laya.events.Event;
 import laya.utils.Stat;
@@ -12,6 +13,7 @@ import manager.FaceMangager;
  */
 public class Platform2DTest003 
 {
+	public static var g:Graphics;
 	private var spt:Sprite;
 	private var ball:Sprite;
 	private var faceArr:Array;
@@ -27,7 +29,7 @@ public class Platform2DTest003
 		this.spt = new Sprite();
 		this.ball = new Sprite();
 		this.ball.graphics.drawCircle(0, 0, 10, "#6633ff");
-
+		g = this.spt.graphics;
 		Laya.stage.addChild(this.spt);
 		Laya.stage.addChild(this.ball);
 		
@@ -95,7 +97,6 @@ public class Platform2DTest003
 		face.downBlock = true;
 		FaceMangager.add(face);
 		
-		
 		//中间层
 		face = new Surface(50, 0, 150, 100, 0, 50);
 		face.name = "middleface1";
@@ -103,6 +104,7 @@ public class Platform2DTest003
 		face.y = 200;
 		face.z = 1;
 		face.upBlock = true;
+		face.leftBlock = true;
 		face.rightBlock = true;
 		face.downBlock = true;
 		FaceMangager.add(face);
@@ -114,6 +116,7 @@ public class Platform2DTest003
 		face.z = 1;
 		face.upBlock = true;
 		face.rightBlock = true;
+		face.leftH = 30;
 		face.downBlock = true;
 		FaceMangager.add(face);
 		
@@ -128,31 +131,26 @@ public class Platform2DTest003
 		face.downBlock = true;
 		FaceMangager.add(face);
 		
-		
-		
-		
 		Laya.stage.on(Event.KEY_DOWN, this, onKeyDown);
 		Laya.stage.on(Event.KEY_UP, this, onKeyUp);
-		Laya.timer.frameLoop(1, this, loop);
+		Laya.timer.frameLoop(20, this, loop);
 	}
 	
 	private function onKeyUp(e:*=null):void 
 	{
 		var keyCode:int = e["keyCode"];
-		if (keyCode == 39 || keyCode == 37) this.body.vx = 0;
-		if (keyCode == 38 || keyCode == 40) this.body.vy = 0;
+		if (keyCode == 39 || keyCode == 37) this.body.moveH(0);
+		if (keyCode == 38 || keyCode == 40) this.body.moveV(0);
 	}
 	
 	private function onKeyDown(e:*=null):void 
 	{
 		var keyCode:int = e["keyCode"];
 		trace(keyCode);
-		if (keyCode == 39) this.body.vx = 2;
-		else if (keyCode == 37) this.body.vx = -2;
-		
-		if (keyCode == 38) this.body.vy = -2;
-		else if (keyCode == 40) this.body.vy = 2;
-		
+		if (keyCode == 39) this.body.moveH(2);
+		else if (keyCode == 37) this.body.moveH(-2);
+		if (keyCode == 38) this.body.moveV(-2);
+		else if (keyCode == 40) this.body.moveV(2);
 		//jump
 		if (keyCode == 32) this.body.jump(12);
 	}
