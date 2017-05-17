@@ -38,10 +38,6 @@ public class Surface
 	protected var _leftH:Number = 0;
 	//右边高
 	protected var _rightH:Number = 0;
-	//上边高
-	protected var _upH:Number = 0;
-	//下边高（一般为0）
-	protected var _downH:Number = 0;
 	public function Surface(upLeftX:Number = 0, downLeftX:Number = 0, 
 							upRightX:Number = 100, downRightX:Number = 100, 
 							upY:Number = 0, downY:Number = 100) 
@@ -74,17 +70,7 @@ public class Surface
 		_rightH = value;
 		this.rightBlock = false;
 	}
-	
-	/**
-	 * 上边高
-	 */
-	public function get upH():Number{ return _upH; }
-	public function set upH(value:Number):void 
-	{
-		_upH = value;
-		this.upBlock = false;
-	}
-	
+
 	/**
 	 * 获取上边坐标
 	 */
@@ -99,16 +85,6 @@ public class Surface
 	public function get downPosY():Number
 	{
 		return this.y + this.downRightPoint.y;
-	}
-	
-	/**
-	 * 下边高（一般为0）
-	 */
-	public function get downH():Number{ return _downH; }
-	public function set downH(value:Number):void 
-	{
-		_downH = value;
-		this.downBlock = false;
 	}
 	
 	/**
@@ -198,20 +174,20 @@ public class Surface
 	 * 是否在上边范围内
 	 * @param	posX	当前x坐标
 	 */
-	public function inUpRange(posX:Number):void
+	public function inUpRange(posX:Number, thick:Number = 0):void
 	{
-		return posX >= this.x + this.upLeftPoint.x && 
-				posX <= this.x + this.upRightPoint.x;
+		return posX >= this.x + this.upLeftPoint.x - thick && 
+				posX <= this.x + this.upRightPoint.x + thick;
 	}
 	
 	/**
 	 * 是否在下边范围内
 	 * @param	posX	当前x坐标
 	 */
-	public function inDownRange(posX:Number):void
+	public function inDownRange(posX:Number, thick:Number = 0):void
 	{
-		return posX >= this.x + this.downleftPoint.x && 
-				posX <= this.x + this.downRightPoint.x;
+		return posX >= this.x + this.downleftPoint.x - thick && 
+				posX <= this.x + this.downRightPoint.x + thick;
 	}
 	
 	/**
@@ -245,7 +221,9 @@ public class Surface
 	 * @param	lineColor	线条颜色
 	 * @param	pointColor	锚点颜色
 	 */
-	public function debugDraw(g:Graphics, lineColor:String = "#ff0000", pointColor:String="#ff0000"):void
+	public function debugDraw(g:Graphics, lineColor:String = "#FF0000", 
+											pointColor:String = "#FFFF00", 
+											heighColor:String = "#0000FF"):void
 	{
 		if (!g) return;
 		g.drawLine(this.x + this.upLeftPoint.x, 
@@ -271,6 +249,44 @@ public class Surface
 					this.x + this.downRightPoint.x,
 					this.y + this.downRightPoint.y, 
 					lineColor);
+		
+		//左边高度
+		g.drawLine(this.x + this.upLeftPoint.x, 
+					this.y + this.upLeftPoint.y,
+					this.x + this.upLeftPoint.x,
+					this.y + this.upLeftPoint.y - this._leftH, 
+					heighColor);
+					
+		g.drawLine(this.x + this.downleftPoint.x, 
+					this.y + this.downleftPoint.y,
+					this.x + this.downleftPoint.x,
+					this.y + this.downleftPoint.y - this._leftH, 
+					heighColor);
+					
+		g.drawLine(this.x + this.upLeftPoint.x, 
+					this.y + this.upLeftPoint.y - this._leftH,
+					this.x + this.downleftPoint.x,
+					this.y + this.downleftPoint.y - this._leftH, 
+					heighColor);
+					
+		//右边高度
+		g.drawLine(this.x + this.upRightPoint.x, 
+					this.y + this.upRightPoint.y,
+					this.x + this.upRightPoint.x,
+					this.y + this.upRightPoint.y - this._rightH, 
+					heighColor);
+					
+		g.drawLine(this.x + this.downRightPoint.x, 
+					this.y + this.downRightPoint.y,
+					this.x + this.downRightPoint.x,
+					this.y + this.downRightPoint.y - this._rightH, 
+					heighColor);
+					
+		g.drawLine(this.x + this.upRightPoint.x, 
+					this.y + this.upRightPoint.y - this._rightH,
+					this.x + this.downRightPoint.x,
+					this.y + this.downRightPoint.y - this._rightH, 
+					heighColor);
 					
 		g.drawCircle(this.x, this.y, 3, pointColor);
 	}

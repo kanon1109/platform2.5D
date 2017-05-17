@@ -380,6 +380,7 @@ var Laya=window.Laya=(function(window,document){
 	/**
 	*...物体
 	*TODO
+	*[绘制出face的高度]
 	*跳跃时限制左右移动
 	*跳跃时不判断face的cage
 	*跳跃后触底在判断face
@@ -456,6 +457,33 @@ var Laya=window.Laya=(function(window,document){
 			}
 			else{
 				if (this.jumpVy >=0){
+					if (this.jumpDirect==3){
+						var faceAry=FaceMangager.seachTopJumpFaceRange(this.x,this.prevZ,this.thick);
+						var count=faceAry.length;
+						for (var i=0;i < count;i++){
+							var face=faceAry[i];
+							console.log("face",face.z);
+							var posY=Infinity;
+							if (face.z-1==this.prevZ){
+								posY=face.downPosY;
+								console.log("top",this.y,posY);
+							}
+							if (face.z==this.prevZ){
+								posY=face.upPosY;
+								console.log("same",this.y,posY);
+							}
+							if (this.y >=posY){
+								this.y=posY;
+								this.face=face;
+								this.isJump=false;
+								this.jumpVy=0;
+								this.vx=0;
+								this.vy=0;
+								this.jumpDirect=0;
+								return;
+							}
+						}
+					}
 				}
 			}
 		}
@@ -480,6 +508,8 @@ var Laya=window.Laya=(function(window,document){
 				this.jumpDirect=3;
 			else if (this.y==this.face.downPosY)
 			this.jumpDirect=4;
+			console.log("this.y",this.y,this.face.upPosY);
+			console.log("this.jumpDirect",this.jumpDirect);
 			this.jumpY=this.y;
 			this.jumpVy=-speed;
 			this.isJump=true;
@@ -547,8 +577,6 @@ var Laya=window.Laya=(function(window,document){
 			this.name=null;
 			this._leftH=0;
 			this._rightH=0;
-			this._upH=0;
-			this._downH=0;
 			(upLeftX===void 0)&& (upLeftX=0);
 			(downLeftX===void 0)&& (downLeftX=0);
 			(upRightX===void 0)&& (upRightX=100);
@@ -617,18 +645,20 @@ var Laya=window.Laya=(function(window,document){
 		*是否在上边范围内
 		*@param posX 当前x坐标
 		*/
-		__proto.inUpRange=function(posX){
-			return posX >=this.x+this.upLeftPoint.x &&
-			posX <=this.x+this.upRightPoint.x;
+		__proto.inUpRange=function(posX,thick){
+			(thick===void 0)&& (thick=0);
+			return posX >=this.x+this.upLeftPoint.x-thick &&
+			posX <=this.x+this.upRightPoint.x+thick;
 		}
 
 		/**
 		*是否在下边范围内
 		*@param posX 当前x坐标
 		*/
-		__proto.inDownRange=function(posX){
-			return posX >=this.x+this.downleftPoint.x &&
-			posX <=this.x+this.downRightPoint.x;
+		__proto.inDownRange=function(posX,thick){
+			(thick===void 0)&& (thick=0);
+			return posX >=this.x+this.downleftPoint.x-thick &&
+			posX <=this.x+this.downRightPoint.x+thick;
 		}
 
 		/**
@@ -660,9 +690,10 @@ var Laya=window.Laya=(function(window,document){
 		*@param lineColor 线条颜色
 		*@param pointColor 锚点颜色
 		*/
-		__proto.debugDraw=function(g,lineColor,pointColor){
-			(lineColor===void 0)&& (lineColor="#ff0000");
-			(pointColor===void 0)&& (pointColor="#ff0000");
+		__proto.debugDraw=function(g,lineColor,pointColor,heighColor){
+			(lineColor===void 0)&& (lineColor="#FF0000");
+			(pointColor===void 0)&& (pointColor="#FFFF00");
+			(heighColor===void 0)&& (heighColor="#0000FF");
 			if (!g)return;
 			g.drawLine(this.x+this.upLeftPoint.x,
 			this.y+this.upLeftPoint.y,
@@ -684,6 +715,36 @@ var Laya=window.Laya=(function(window,document){
 			this.x+this.downRightPoint.x,
 			this.y+this.downRightPoint.y,
 			lineColor);
+			g.drawLine(this.x+this.upLeftPoint.x,
+			this.y+this.upLeftPoint.y,
+			this.x+this.upLeftPoint.x,
+			this.y+this.upLeftPoint.y-this._leftH,
+			heighColor);
+			g.drawLine(this.x+this.downleftPoint.x,
+			this.y+this.downleftPoint.y,
+			this.x+this.downleftPoint.x,
+			this.y+this.downleftPoint.y-this._leftH,
+			heighColor);
+			g.drawLine(this.x+this.upLeftPoint.x,
+			this.y+this.upLeftPoint.y-this._leftH,
+			this.x+this.downleftPoint.x,
+			this.y+this.downleftPoint.y-this._leftH,
+			heighColor);
+			g.drawLine(this.x+this.upRightPoint.x,
+			this.y+this.upRightPoint.y,
+			this.x+this.upRightPoint.x,
+			this.y+this.upRightPoint.y-this._rightH,
+			heighColor);
+			g.drawLine(this.x+this.downRightPoint.x,
+			this.y+this.downRightPoint.y,
+			this.x+this.downRightPoint.x,
+			this.y+this.downRightPoint.y-this._rightH,
+			heighColor);
+			g.drawLine(this.x+this.upRightPoint.x,
+			this.y+this.upRightPoint.y-this._rightH,
+			this.x+this.downRightPoint.x,
+			this.y+this.downRightPoint.y-this._rightH,
+			heighColor);
 			g.drawCircle(this.x,this.y,3,pointColor);
 		}
 
@@ -695,27 +756,11 @@ var Laya=window.Laya=(function(window,document){
 		});
 
 		/**
-		*上边高
-		*/
-		__getset(0,__proto,'upH',function(){return this._upH;},function(value){
-			this._upH=value;
-			this.upBlock=false;
-		});
-
-		/**
 		*左边高
 		*/
 		__getset(0,__proto,'leftH',function(){return this._leftH;},function(value){
 			this._leftH=value;
 			this.leftBlock=false;
-		});
-
-		/**
-		*下边高（一般为0）
-		*/
-		__getset(0,__proto,'downH',function(){return this._downH;},function(value){
-			this._downH=value;
-			this.downBlock=false;
 		});
 
 		/**
@@ -788,11 +833,11 @@ var Laya=window.Laya=(function(window,document){
 				body.y=face.upPosY;
 			if (face.downBlock && body.y > face.downPosY)
 				body.y=face.downPosY;
-			if (face.leftBlock){
+			if (face.leftBlock || face.leftH > 0){
 				var leftX=face.getLeftRange(body.y)+body.thick;
 				if (body.x < leftX)body.x=leftX;
 			}
-			if (face.rightBlock){
+			if (face.rightBlock || face.rightH > 0){
 				var rightX=face.getRightRange(body.y)-body.thick;
 				if (body.x > rightX)body.x=rightX;
 			}
@@ -810,37 +855,31 @@ var Laya=window.Laya=(function(window,document){
 			return null;
 		}
 
-		FaceMangager.seachFaceByDepth=function(x,y,z,thick,state){
+		FaceMangager.seachTopJumpFaceRange=function(x,z,thick){
 			(thick===void 0)&& (thick=0);
-			(state===void 0)&& (state=0);
+			var arr=[];
 			var count=FaceMangager.faceAry.length;
 			for (var i=0;i < count;i++){
 				var face=FaceMangager.faceAry[i];
-				if (state==0){
-					if (face.z < z)continue
-						}
-				else if (state==1){
-					if (face.z !=z)continue
-						}
-				else if (state==2){
-					if (face.z > z)continue
-						}
-				if (face.inFaceRage(x,y,thick)){
-					return face;
-				}
+				if (z+1==face.z && face.inDownRange(x,thick))
+					arr.push(face);
+				if (z==face.z && face.inUpRange(x,thick))
+					arr.push(face);
 			}
-			return null;
+			arr.sort(function(a,b){return a.z > b.z ? 1 :-1});
+			return arr;
 		}
 
-		FaceMangager.debugFace=function(g,lineColor,pointColor){
-			(lineColor===void 0)&& (lineColor="#ff0000");
-			(pointColor===void 0)&& (pointColor="#ff0000");
+		FaceMangager.debugFace=function(g,lineColor,pointColor,heighColor){
+			(lineColor===void 0)&& (lineColor="#FF0000");
+			(pointColor===void 0)&& (pointColor="#FFFF00");
+			(heighColor===void 0)&& (heighColor="#0000FF");
 			if (!g)return;
 			g.clear();
 			var count=FaceMangager.faceAry.length;
 			for (var i=0;i < count;i++){
 				var face=FaceMangager.faceAry[i];
-				face.debugDraw(g,lineColor,pointColor);
+				face.debugDraw(g,lineColor,pointColor,heighColor);
 			}
 		}
 
@@ -892,9 +931,18 @@ var Laya=window.Laya=(function(window,document){
 			face.x=startX+100-50;
 			face.y=280;
 			face.z=0;
+			face.rightBlock=true;
+			face.downBlock=true;
+			FaceMangager.add(face);
+			face=new Surface(50,0,150,100,0,50);
+			face.name="downface3";
+			face.x=startX+230-50;
+			face.y=280+30;
+			face.z=0;
 			face.upBlock=true;
 			face.rightBlock=true;
 			face.downBlock=true;
+			face.leftH=30;
 			FaceMangager.add(face);
 			face=new Surface(50,0,150,100,0,50);
 			face.name="middleface1";
@@ -903,8 +951,6 @@ var Laya=window.Laya=(function(window,document){
 			face.z=1;
 			face.upBlock=true;
 			face.leftBlock=true;
-			face.rightBlock=true;
-			face.downBlock=true;
 			FaceMangager.add(face);
 			face=new Surface(50,0,150,100,0,50);
 			face.name="middleface2";
@@ -914,37 +960,48 @@ var Laya=window.Laya=(function(window,document){
 			face.upBlock=true;
 			face.rightBlock=true;
 			face.leftH=30;
-			face.downBlock=true;
 			FaceMangager.add(face);
-			face=new Surface(50,0,150,100,0,50);
+			face=new Surface(50,0,450,400,0,50);
 			face.name="upface1";
 			face.x=startX+50;
 			face.y=120;
 			face.z=2;
 			face.upBlock=true;
 			face.rightBlock=true;
-			face.downBlock=true;
+			face.leftBlock=true;
 			FaceMangager.add(face);
+			Laya.stage.on("click",this,this.onClick);
 			Laya.stage.on("keydown",this,this.onKeyDown);
+			Laya.stage.on("keypress",this,this.onKeyPress);
 			Laya.stage.on("keyup",this,this.onKeyUp);
-			Laya.timer.frameLoop(20,this,this.loop);
+			Laya.timer.frameLoop(1,this,this.loop);
 		}
 
 		__class(Platform2DTest003,'Platform2DTest003');
 		var __proto=Platform2DTest003.prototype;
+		__proto.onKeyPress=function(e){
+			var keyCode=e["keyCode"];
+			console.log("onKeyPress",this.onKeyPress);
+		}
+
+		__proto.onClick=function(e){
+			this.body.jump(12);
+		}
+
 		__proto.onKeyUp=function(e){
 			var keyCode=e["keyCode"];
-			if (keyCode==39 || keyCode==37)this.body.moveH(0);
-			if (keyCode==38 || keyCode==40)this.body.moveV(0);
+			console.log("onKeyUp",keyCode);
+			if (keyCode==68 || keyCode==65)this.body.moveH(0);
+			if (keyCode==87 || keyCode==83)this.body.moveV(0);
 		}
 
 		__proto.onKeyDown=function(e){
 			var keyCode=e["keyCode"];
-			console.log(keyCode);
-			if (keyCode==39)this.body.moveH(2);
-			else if (keyCode==37)this.body.moveH(-2);
-			if (keyCode==38)this.body.moveV(-2);
-			else if (keyCode==40)this.body.moveV(2);
+			console.log("onKeyDown",keyCode);
+			if (keyCode==68)this.body.moveH(2);
+			else if (keyCode==65)this.body.moveH(-2);
+			if (keyCode==87)this.body.moveV(-2);
+			else if (keyCode==83)this.body.moveV(2);
 			if (keyCode==32)this.body.jump(12);
 		}
 
@@ -952,7 +1009,7 @@ var Laya=window.Laya=(function(window,document){
 			FaceMangager.debugFace(this.spt.graphics);
 			this.body.update();
 			if (this.body.face)
-				this.body.face.debugDraw(this.spt.graphics,"#0000ff");
+				this.body.face.debugDraw(this.spt.graphics,"#00FF80");
 		}
 
 		Platform2DTest003.g=null

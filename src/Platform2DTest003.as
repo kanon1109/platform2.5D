@@ -38,41 +38,6 @@ public class Platform2DTest003
 		this.body.y = 200;
 		this.body.thick = 10;
 		this.body.display = ball;
-		/*for (var i:int = 0; i < 3; i++) 
-		{
-			var face:Surface = new Surface(50, 0, 150, 100);
-			face.name = "face" + i;
-			face.x = (100 + gapH) * i + startX ;
-			face.y = 100;
-			if (i == 0 || i == 1)
-			{
-				face.upBlock = true;
-				face.z = 0;
-			}
-				
-			if (i == 0)
-			{
-				face.leftBlock = true;
-			}
-			
-			if (i == 1)
-			{
-				face.rightBlock = true;
-				face.downBlock = true;
-			}
-				
-			if (i == 2) 
-			{
-				face.leftBlock = true;
-				face.rightBlock = true;
-				face.downBlock = true;
-				face.x = startX - 50;
-				face.y = 200;
-				face.z = 1;
-			}
-			if (i == 0) this.body.face = face;
-			FaceMangager.add(face);
-		}*/
 		
 		//最下层
 		var startX:Number = 80;
@@ -92,9 +57,20 @@ public class Platform2DTest003
 		face.x = startX + 100 - 50;
 		face.y = 280;
 		face.z = 0;
+		//face.upBlock = true;
+		face.rightBlock = true;
+		face.downBlock = true;
+		FaceMangager.add(face);
+		
+		face = new Surface(50, 0, 150, 100, 0, 50);
+		face.name = "downface3";
+		face.x = startX + 230 - 50;
+		face.y = 280 + 30;
+		face.z = 0;
 		face.upBlock = true;
 		face.rightBlock = true;
 		face.downBlock = true;
+		face.leftH = 30;
 		FaceMangager.add(face);
 		
 		//中间层
@@ -105,8 +81,8 @@ public class Platform2DTest003
 		face.z = 1;
 		face.upBlock = true;
 		face.leftBlock = true;
-		face.rightBlock = true;
-		face.downBlock = true;
+		//face.rightBlock = true;
+		//face.downBlock = true;
 		FaceMangager.add(face);
 		
 		face = new Surface(50, 0, 150, 100, 0, 50);
@@ -117,41 +93,55 @@ public class Platform2DTest003
 		face.upBlock = true;
 		face.rightBlock = true;
 		face.leftH = 30;
-		face.downBlock = true;
+		//face.downBlock = true;
 		FaceMangager.add(face);
 		
 		//最上层
-		face = new Surface(50, 0, 150, 100, 0, 50);
+		face = new Surface(50, 0, 450, 400, 0, 50);
 		face.name = "upface1";
 		face.x = startX + 50;
 		face.y = 120;
 		face.z = 2;
 		face.upBlock = true;
 		face.rightBlock = true;
-		face.downBlock = true;
+		face.leftBlock = true;
 		FaceMangager.add(face);
 		
+		Laya.stage.on(Event.CLICK, this, onClick);
 		Laya.stage.on(Event.KEY_DOWN, this, onKeyDown);
+		Laya.stage.on(Event.KEY_PRESS, this, onKeyPress);
 		Laya.stage.on(Event.KEY_UP, this, onKeyUp);
-		Laya.timer.frameLoop(20, this, loop);
+		Laya.timer.frameLoop(1, this, loop);
+	}
+	
+	private function onKeyPress(e:*=null):void 
+	{
+		var keyCode:int = e["keyCode"];
+		trace("onKeyPress", onKeyPress);
+	}
+	
+	private function onClick(e:*=null):void 
+	{
+		//jump
+		this.body.jump(12);
 	}
 	
 	private function onKeyUp(e:*=null):void 
 	{
 		var keyCode:int = e["keyCode"];
-		if (keyCode == 39 || keyCode == 37) this.body.moveH(0);
-		if (keyCode == 38 || keyCode == 40) this.body.moveV(0);
+		trace("onKeyUp", keyCode);
+		if (keyCode == 68 || keyCode == 65) this.body.moveH(0);
+		if (keyCode == 87 || keyCode == 83) this.body.moveV(0);
 	}
 	
 	private function onKeyDown(e:*=null):void 
 	{
 		var keyCode:int = e["keyCode"];
-		trace(keyCode);
-		if (keyCode == 39) this.body.moveH(2);
-		else if (keyCode == 37) this.body.moveH(-2);
-		if (keyCode == 38) this.body.moveV(-2);
-		else if (keyCode == 40) this.body.moveV(2);
-		//jump
+		trace("onKeyDown", keyCode);
+		if (keyCode == 68) this.body.moveH(2);
+		else if (keyCode == 65) this.body.moveH(-2);
+		if (keyCode == 87) this.body.moveV(-2);
+		else if (keyCode == 83) this.body.moveV(2);
 		if (keyCode == 32) this.body.jump(12);
 	}
 	
@@ -160,7 +150,7 @@ public class Platform2DTest003
 		FaceMangager.debugFace(this.spt.graphics);
 		this.body.update();
 		if (this.body.face)
-			this.body.face.debugDraw(this.spt.graphics, "#0000ff");
+			this.body.face.debugDraw(this.spt.graphics, "#00FF80");
 	}
 }
 }

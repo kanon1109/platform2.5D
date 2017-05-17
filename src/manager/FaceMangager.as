@@ -39,13 +39,13 @@ public class FaceMangager
 		if (face.downBlock && body.y > face.downPosY)
 			body.y = face.downPosY;
 		
-		if (face.leftBlock)
+		if (face.leftBlock || face.leftH > 0)
 		{
 			var leftX:Number = face.getLeftRange(body.y) + body.thick;
 			if (body.x < leftX) body.x = leftX;
 		}
 		
-		if (face.rightBlock)
+		if (face.rightBlock || face.rightH > 0)
 		{
 			var rightX:Number = face.getRightRange(body.y) - body.thick;
 			if (body.x > rightX) body.x = rightX;
@@ -54,9 +54,9 @@ public class FaceMangager
 	
 	/**
 	 * 搜索面
-	 * @param	x		当前坐标x
-	 * @param	y		当前坐标y
-	 * @param	thick	厚度
+	 * @param	x		body的x坐标
+	 * @param	y		body的y坐标
+	 * @param	thick	body的厚度
 	 * @return	搜索到的面
 	 */
 	public static function seachFace(x:Number, 
@@ -76,77 +76,27 @@ public class FaceMangager
 	}
 	
 	/**
-	 * 根据深度搜索face
-	 * @param	x		当前坐标x	
-	 * @param	y		当前坐标y
-	 * @param	z		当前face的z坐标
-	 * @param	thick	厚度
-	 * @param	state	搜索状态	0：只搜深度>=当前face的深度，1：同深度跳跃，2只搜索<=当前face深度
+	 * 搜索向上跳跃时body在face的范围内
+	 * @param	x			body的x坐标	
+	 * @param	z			body的z坐标
+	 * @param	thick		body的厚度
+	 * @return	搜索到面的数组
 	 */
-	public static function seachFaceByDepth(x:Number, y:Number, z:Number, 
-											thick:Number = 0, state:int = 0)
+	public static function seachTopJumpFaceRange(x:Number, z:Number, thick:Number = 0):Array
 	{
+		var arr:Array = [];
 		var count:int = faceAry.length;
 		for (var i:int = 0; i < count; i++) 
 		{
 			var face:Surface = faceAry[i];
-			if (state == 0)
-			{
-				//往上跳跃时
-				if (face.z < z) continue;
-			}
-			else if (state == 1)
-			{
-				//同级别跳跃时
-				if (face.z != z) continue;
-			}
-			else if (state == 2)
-			{
-				//往下跳跃时
-				if (face.z > z) continue;
-			}
-			if (face.inFaceRage(x, y, thick))
-			{
-				return face;
-			}
+			if (z + 1 == face.z && face.inDownRange(x, thick))
+				arr.push(face);
+			if (z == face.z && face.inUpRange(x, thick))
+				arr.push(face);
 		}
-		return null;
+		arr.sort(function(a:Surface, b:Surface):Number { return a.z > b.z ? 1 : -1});
+		return arr;
 	}
-	
-	/**
-	 * 根据深度搜索在面范围内的
-	 * @param	x
-	 * @param	z
-	 * @param	state
-	 */
-	public static function seachFaceRangeByDepth(x:Number, z:Number, state:int = 0)
-	{
-		var count:int = faceAry.length;
-		for (var i:int = 0; i < count; i++) 
-		{
-			var face:Surface = faceAry[i];
-			if (state == 0)
-			{
-				//往上跳跃时
-				if (face.z < z) continue;
-				if (face.inDownRange(x)) return face;
-			}
-			else if (state == 1)
-			{
-				//同级别跳跃时
-				if (face.z != z) continue;
-				if (face.inDownRange(x) || face.inUpRange(x)) return face;
-			}
-			else if (state == 2)
-			{
-				//往下跳跃时
-				if (face.z > z) continue;
-				if(face.inUpRange(x)) return face;
-			}
-		}
-		return null;
-	}
-
 	
 	/**
 	 * debug 所有的face
@@ -154,7 +104,9 @@ public class FaceMangager
 	 * @param	lineColor	线条颜色
 	 * @param	pointColor	锚点颜色
 	 */
-	public static function debugFace(g:Graphics, lineColor:String = "#ff0000", pointColor:String="#ff0000"):void
+	public static function debugFace(g:Graphics, lineColor:String = "#FF0000", 
+												pointColor:String = "#FFFF00", 
+												heighColor:String = "#0000FF"):void
 	{
 		if (!g) return;
 		g.clear();
@@ -162,7 +114,7 @@ public class FaceMangager
 		for (var i:int = 0; i < count; i++) 
 		{
 			var face:Surface = faceAry[i];
-			face.debugDraw(g, lineColor, pointColor);
+			face.debugDraw(g, lineColor, pointColor, heighColor);
 		}
 	}
 }

@@ -6,6 +6,7 @@ import manager.FaceMangager;
 /**
  * ...物体
  * TODO 
+ * [绘制出face的高度]
  * 跳跃时限制左右移动
  * 跳跃时不判断face的cage
  * 跳跃后触底在判断face
@@ -110,22 +111,22 @@ public class Body
 		{
 			if (this.jumpVy >= 0)
 			{
-				/*var face:Surface = FaceMangager.seachFaceRangeByDepth(this.x, this.y, this.prevZ, this.thick, 0);
-				if (face)
+				if (this.jumpDirect == UP)
 				{
-					//TODO 判断是否从当前face的顶部跳跃
-					if (this.jumpDirect == UP)
+					var faceAry:Array = FaceMangager.seachTopJumpFaceRange(this.x, this.prevZ, this.thick);
+					var count:int = faceAry.length; 
+					for (var i:int = 0; i < count; i++) 
 					{
-						//TODO
-						//根据深度搜索
-						//根据face的深度判断着陆点
-						//可能碰到的face
+						var face:Surface = faceAry[i];
+						trace("face", face.z);
 						var posY:Number = Infinity;
-						if (face.z + 1 == this.prevZ)
+						if (face.z - 1 == this.prevZ)
 						{
-							//找到上一层的面
 							posY = face.downPosY;
-							trace("in1", this.y, face.downPosY);
+						}
+						if (face.z == this.prevZ)
+						{
+							posY = face.upPosY;
 						}
 						if (this.y >= posY)
 						{
@@ -133,14 +134,13 @@ public class Body
 							this.face = face;
 							this.isJump = false;
 							this.jumpVy = 0;
+							this.vx = 0;
+							this.vy = 0;
+							this.jumpDirect = NONE;
 							return;
 						}
 					}
-					else if (this.jumpDirect == DOWN)
-					{
-						
-					}
-				}*/
+				}
 			}
 		}
 	}
@@ -169,6 +169,9 @@ public class Body
 			this.jumpDirect = UP;
 		else if (this.y == this.face.downPosY)
 			this.jumpDirect = DOWN;
+			
+		trace("this.y", this.y, this.face.upPosY);
+		trace("this.jumpDirect", this.jumpDirect);
 		this.jumpY = this.y;
 		this.jumpVy = -speed;
 		this.isJump = true;
