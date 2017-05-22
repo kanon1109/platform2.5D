@@ -58,6 +58,7 @@ public class Platform2DTest003
 		face.y = 280;
 		face.z = 0;
 		//face.upBlock = true;
+		face.leftRestrict = true;
 		face.rightBlock = true;
 		face.downBlock = true;
 		FaceMangager.add(face);
@@ -97,14 +98,25 @@ public class Platform2DTest003
 		FaceMangager.add(face);
 		
 		//最上层
-		face = new Surface(50, 0, 450, 400, 0, 50);
+		face = new Surface(50, 0, 150, 100, 0, 50);
 		face.name = "upface1";
 		face.x = startX + 50;
 		face.y = 120;
 		face.z = 2;
 		face.upBlock = true;
-		face.rightBlock = true;
+		//face.rightBlock = true;
 		face.leftBlock = true;
+		FaceMangager.add(face);
+		
+		//最上层
+		face = new Surface(50, 0, 150, 100, 0, 50);
+		face.name = "upface2";
+		face.x = startX + 190;
+		face.y = 120;
+		face.z = 2;
+		face.upBlock = true;
+		face.rightBlock = true;
+		//face.leftBlock = true;
 		FaceMangager.add(face);
 		
 		Laya.stage.on(Event.CLICK, this, onClick);
@@ -117,7 +129,6 @@ public class Platform2DTest003
 	private function onKeyPress(e:*=null):void 
 	{
 		var keyCode:int = e["keyCode"];
-		trace("onKeyPress", onKeyPress);
 	}
 	
 	private function onClick(e:*=null):void 
@@ -129,7 +140,7 @@ public class Platform2DTest003
 	private function onKeyUp(e:*=null):void 
 	{
 		var keyCode:int = e["keyCode"];
-		trace("onKeyUp", keyCode);
+		//trace("onKeyUp", keyCode);
 		if (keyCode == 68 || keyCode == 65) this.body.moveH(0);
 		if (keyCode == 87 || keyCode == 83) this.body.moveV(0);
 	}
@@ -137,7 +148,7 @@ public class Platform2DTest003
 	private function onKeyDown(e:*=null):void 
 	{
 		var keyCode:int = e["keyCode"];
-		trace("onKeyDown", keyCode);
+		//trace("onKeyDown", keyCode);
 		if (keyCode == 68) this.body.moveH(2);
 		else if (keyCode == 65) this.body.moveH(-2);
 		if (keyCode == 87) this.body.moveV(-2);

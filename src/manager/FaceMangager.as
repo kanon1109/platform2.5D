@@ -53,15 +53,41 @@ public class FaceMangager
 	}
 	
 	/**
+	 * 在一个面上判断上下是否有限制
+	 * @param	face		面
+	 * @param	body		物体
+	 */
+	public static function restrictInFace(face:Surface, body:Body):void
+	{
+		if (!face || !body) return;
+		if (face.leftRestrict)
+		{
+			if (body.x - body.thick < face.x + face.upLeftPoint.x)
+			{
+				if (body.y < face.y + face.upLeftPoint.y)
+					body.y = face.y + face.upLeftPoint.y;
+			}
+		}
+		if (face.rightRestrict)
+		{
+			if (body.x + body.thick > face.x + face.upRightPoint.x)
+			{
+				if (body.y < face.y + face.upRightPoint.y)
+					body.y = face.y + face.upRightPoint.y;
+			}
+		}
+	}
+	
+	/**
 	 * 搜索面
 	 * @param	x		body的x坐标
 	 * @param	y		body的y坐标
 	 * @param	thick	body的厚度
 	 * @return	搜索到的面
 	 */
-	public static function seachFace(x:Number, 
-									 y:Number, 
-									 thick:Number = 0):Surface
+	public static function seachLinkFace(x:Number, 
+										y:Number, 
+										thick:Number = 0):Surface
 	{
 		var count:int = faceAry.length;
 		for (var i:int = 0; i < count; i++) 
@@ -99,14 +125,38 @@ public class FaceMangager
 	}
 	
 	/**
+	 * 获取两个face之间的间距
+	 * @param	face1		面1
+	 * @param	face2		面2
+	 * @return	高度
+	 */
+	public static function getGapBetweenFace(face1:Surface, face2:Surface):Number
+	{
+		if (!face1 || !face2) return 0;
+		return Math.abs(face1.downPosY - face2.downPosY);
+	}
+	
+	/**
+	 * * 判断两个face是否在同一y坐标上
+	 * @param	face1		面1
+	 * @param	face2		面2
+	 * @return	是否在同一y坐标上
+	 */
+	public static function isEqualPosY(face1:Surface, face2:Surface):Boolean
+	{
+		if (!face1 || !face2) return false;
+		return face1.z == face2.z && getGapBetweenFace(face1, face2) == 0;
+	}
+	
+	/**
 	 * debug 所有的face
 	 * @param	g			绘图容器
 	 * @param	lineColor	线条颜色
 	 * @param	pointColor	锚点颜色
 	 */
 	public static function debugFace(g:Graphics, lineColor:String = "#FF0000", 
-												pointColor:String = "#FFFF00", 
-												heighColor:String = "#0000FF"):void
+												 pointColor:String = "#FFFF00", 
+												 heighColor:String = "#0000FF"):void
 	{
 		if (!g) return;
 		g.clear();

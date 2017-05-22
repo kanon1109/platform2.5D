@@ -32,6 +32,10 @@ public class Surface
 	public var downleftPoint:Point;
 	//右下点坐标
 	public var downRightPoint:Point;
+	//左边上下限制(用于左边相邻的face的upBlock为true时判断)
+	public var leftRestrict:Boolean;
+	//右边上下限制(用于右边相邻的face的upBlock为true时判断)
+	public var rightRestrict:Boolean;
 	//名字
 	public var name:String;
 	//左边高
@@ -169,12 +173,36 @@ public class Surface
 		return posY >= this.y + this.upLeftPoint.y && 
 				posY <= this.y + this.downleftPoint.y
 	}
+	
+	/**
+	 * 是否在左上范围内
+	 * @param	posX		当前x坐标
+	 * @param	thick		body的厚度
+	 * @return
+	 */
+	public function inLeftUpRange(posX:Number, thick:Number = 0):Boolean
+	{
+		return posX >= this.x + this.upLeftPoint.x - thick
+	}
+	
+	/**
+	 * 是否在右上范围内
+	 * @param	posX		当前x坐标
+	 * @param	thick		body的厚度
+	 * @return
+	 */
+	public function inRightUpRange(posX:Number, thick:Number = 0):Boolean
+	{
+		return posX <= this.x + this.upRightPoint.x + thick;
+	}
 
 	/**
 	 * 是否在上边范围内
-	 * @param	posX	当前x坐标
+	 * @param	posX		当前x坐标
+	 * @param	thick		body的厚度
+	 * @return
 	 */
-	public function inUpRange(posX:Number, thick:Number = 0):void
+	public function inUpRange(posX:Number, thick:Number = 0):Boolean
 	{
 		return posX >= this.x + this.upLeftPoint.x - thick && 
 				posX <= this.x + this.upRightPoint.x + thick;
@@ -182,9 +210,11 @@ public class Surface
 	
 	/**
 	 * 是否在下边范围内
-	 * @param	posX	当前x坐标
+	 * @param	posX		当前x坐标
+	 * @param	thick		body的厚度
+	 * @return
 	 */
-	public function inDownRange(posX:Number, thick:Number = 0):void
+	public function inDownRange(posX:Number, thick:Number = 0):Boolean
 	{
 		return posX >= this.x + this.downleftPoint.x - thick && 
 				posX <= this.x + this.downRightPoint.x + thick;
