@@ -280,44 +280,49 @@ public class Surface
 					this.y + this.downRightPoint.y, 
 					lineColor);
 		
-		//左边高度
-		g.drawLine(this.x + this.upLeftPoint.x, 
-					this.y + this.upLeftPoint.y,
-					this.x + this.upLeftPoint.x,
-					this.y + this.upLeftPoint.y - this._leftH, 
-					heighColor);
-					
-		g.drawLine(this.x + this.downleftPoint.x, 
-					this.y + this.downleftPoint.y,
-					this.x + this.downleftPoint.x,
-					this.y + this.downleftPoint.y - this._leftH, 
-					heighColor);
-					
-		g.drawLine(this.x + this.upLeftPoint.x, 
-					this.y + this.upLeftPoint.y - this._leftH,
-					this.x + this.downleftPoint.x,
-					this.y + this.downleftPoint.y - this._leftH, 
-					heighColor);
+		if (this.leftBlock || this._leftH > 0)
+		{	
+			//左边高度
+			g.drawLine(this.x + this.upLeftPoint.x, 
+						this.y + this.upLeftPoint.y,
+						this.x + this.upLeftPoint.x,
+						this.y + this.upLeftPoint.y - this._leftH, 
+						heighColor);
+						
+			g.drawLine(this.x + this.downleftPoint.x, 
+						this.y + this.downleftPoint.y,
+						this.x + this.downleftPoint.x,
+						this.y + this.downleftPoint.y - this._leftH, 
+						heighColor);
+						
+			g.drawLine(this.x + this.upLeftPoint.x, 
+						this.y + this.upLeftPoint.y - this._leftH,
+						this.x + this.downleftPoint.x,
+						this.y + this.downleftPoint.y - this._leftH, 
+						heighColor);
+		}
 					
 		//右边高度
-		g.drawLine(this.x + this.upRightPoint.x, 
-					this.y + this.upRightPoint.y,
-					this.x + this.upRightPoint.x,
-					this.y + this.upRightPoint.y - this._rightH, 
-					heighColor);
+		if (this.rightBlock || this._rightH > 0)
+		{
+			g.drawLine(this.x + this.upRightPoint.x, 
+						this.y + this.upRightPoint.y,
+						this.x + this.upRightPoint.x,
+						this.y + this.upRightPoint.y - this._rightH, 
+						heighColor);
+
+			g.drawLine(this.x + this.downRightPoint.x, 
+						this.y + this.downRightPoint.y,
+						this.x + this.downRightPoint.x,
+						this.y + this.downRightPoint.y - this._rightH, 
+						heighColor);
 					
-		g.drawLine(this.x + this.downRightPoint.x, 
-					this.y + this.downRightPoint.y,
-					this.x + this.downRightPoint.x,
-					this.y + this.downRightPoint.y - this._rightH, 
-					heighColor);
-					
-		g.drawLine(this.x + this.upRightPoint.x, 
-					this.y + this.upRightPoint.y - this._rightH,
-					this.x + this.downRightPoint.x,
-					this.y + this.downRightPoint.y - this._rightH, 
-					heighColor);
-					
+			g.drawLine(this.x + this.upRightPoint.x, 
+						this.y + this.upRightPoint.y - this._rightH,
+						this.x + this.downRightPoint.x,
+						this.y + this.downRightPoint.y - this._rightH, 
+						heighColor);
+		}
 		g.drawCircle(this.x, this.y, 3, pointColor);
 	}
 }

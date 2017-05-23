@@ -125,6 +125,31 @@ public class FaceMangager
 	}
 	
 	/**
+	 * 搜索face的底部区域跳跃时body在face的范围内
+	 * @param	x			body的x坐标	
+	 * @param	z			body的z坐标
+	 * @param	thick		body的厚度
+	 * @return	搜索到面的数组
+	 */
+	public static function seachBottomJumpFaceRange(x:Number, z:Number, thick:Number = 0):Array
+	{
+		var arr:Array = [];
+		var count:int = faceAry.length;
+		for (var i:int = 0; i < count; i++) 
+		{
+			var face:Surface = faceAry[i];
+			//向下查找
+			if (z - 1 == face.z && face.inDownRange(x, thick))
+				arr.push(face);
+			//同级查找
+			if (z == face.z && face.inUpRange(x, thick))
+				arr.push(face);
+		}
+		arr.sort(function(a:Surface, b:Surface):Number { return a.z > b.z ? 1 : -1});
+		return arr;
+	}
+	
+	/**
 	 * 获取两个face之间的间距
 	 * @param	face1		面1
 	 * @param	face2		面2

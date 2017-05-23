@@ -468,9 +468,9 @@ var Laya=window.Laya=(function(window,document){
 					}
 					else{
 						var count=FaceMangager.faceAry.length;
+						var posY=this.prevFaceY;
 						for (var i=0;i < count;++i){
 							var face=FaceMangager.faceAry[i];
-							var posY=this.prevFaceY;
 							if (this.prevFace !=face){
 								if (this.prevFace.z==face.z){
 									var height=face.downPosY-this.prevFace.downPosY;
@@ -499,9 +499,9 @@ var Laya=window.Laya=(function(window,document){
 						if (this.positionState==3){
 							var faceAry=FaceMangager.seachTopJumpFaceRange(this.x,this.prevZ,this.thick);
 							var count=faceAry.length;
+							var posY=Infinity;
 							for (var i=0;i < count;i++){
 								var face=faceAry[i];
-								var posY=Infinity;
 								if (face.z-1==this.prevZ){
 									posY=face.downPosY;
 								}
@@ -521,8 +521,45 @@ var Laya=window.Laya=(function(window,document){
 								}
 							}
 						}
-						else if (this.positionState==0 ||
-						this.positionState==4){
+						else if (this.positionState==0){
+							if (this.jumpVx==0){
+								if (this.y >=this.prevFaceY && this.prevY < this.prevFaceY){
+									this.isJump=false;
+									this.face=this.prevFace;
+									this.y=this.prevFaceY;
+									this.jumpVy=0;
+									this.vy=0;
+									this.positionState=0;
+									return;
+								}
+							}
+							else{
+								var count=FaceMangager.faceAry.length;
+								var posY=this.prevFaceY;
+								for (var i=0;i < count;++i){
+									var face=FaceMangager.faceAry[i];
+									if (this.prevFace !=face){
+										if (this.prevFace.z==face.z){
+											var height=face.downPosY-this.prevFace.downPosY;
+											if (this.prevFace !=face)posY=this.prevFaceY+height;
+											else posY=this.prevFaceY;
+										}
+									}
+									if (this.y >=posY && this.prevY < posY){
+										this.face=face;
+										this.isJump=false;
+										this.y=posY;
+										this.jumpVx=0;
+										this.jumpVy=0;
+										this.vx=0;
+										this.vy=0;
+										this.positionState=0;
+										return;
+									}
+								}
+							}
+						}
+						else if (this.positionState==4){
 							if (this.jumpVx==0){
 								if (this.y >=this.prevFaceY && this.prevY < this.prevFaceY){
 									this.isJump=false;
@@ -534,28 +571,26 @@ var Laya=window.Laya=(function(window,document){
 								}
 							}
 							else{
-								var count=FaceMangager.faceAry.length;
-								for (var i=0;i < count;++i){
-									var face=FaceMangager.faceAry[i];
-									var posY=this.prevFaceY;
-									if (this.prevFace !=face){
-										if (this.prevFace.z==face.z){
-											var height=face.downPosY-this.prevFace.downPosY;
-											posY=this.prevFaceY+height;
-										}
-										else if (this.prevFace.z-1==face.z){
-											if (face.inUpRange(this.x,this.thick))
-												posY=face.upPosY;
-										}
+								var faceAry=FaceMangager.seachTopJumpFaceRange(this.x,this.prevZ,this.thick);
+								var count=faceAry.length;
+								var posY=this.prevFaceY;
+								for (var i=0;i < count;i++){
+									var face=faceAry[i];
+									if (face.z-1==this.prevZ){
+										posY=face.downPosY;
+									}
+									if (face.z==this.prevZ && face !=this.prevFace){
+										posY=face.upPosY;
 									}
 									if (this.y >=posY && this.prevY < posY){
-										this.face=face;
 										this.isJump=false;
+										this.face=face;
 										this.y=posY;
 										this.jumpVx=0;
 										this.jumpVy=0;
 										this.vx=0;
 										this.vy=0;
+										this.positionState=0;
 										return;
 									}
 								}
@@ -844,36 +879,40 @@ var Laya=window.Laya=(function(window,document){
 			this.x+this.downRightPoint.x,
 			this.y+this.downRightPoint.y,
 			lineColor);
-			g.drawLine(this.x+this.upLeftPoint.x,
-			this.y+this.upLeftPoint.y,
-			this.x+this.upLeftPoint.x,
-			this.y+this.upLeftPoint.y-this._leftH,
-			heighColor);
-			g.drawLine(this.x+this.downleftPoint.x,
-			this.y+this.downleftPoint.y,
-			this.x+this.downleftPoint.x,
-			this.y+this.downleftPoint.y-this._leftH,
-			heighColor);
-			g.drawLine(this.x+this.upLeftPoint.x,
-			this.y+this.upLeftPoint.y-this._leftH,
-			this.x+this.downleftPoint.x,
-			this.y+this.downleftPoint.y-this._leftH,
-			heighColor);
-			g.drawLine(this.x+this.upRightPoint.x,
-			this.y+this.upRightPoint.y,
-			this.x+this.upRightPoint.x,
-			this.y+this.upRightPoint.y-this._rightH,
-			heighColor);
-			g.drawLine(this.x+this.downRightPoint.x,
-			this.y+this.downRightPoint.y,
-			this.x+this.downRightPoint.x,
-			this.y+this.downRightPoint.y-this._rightH,
-			heighColor);
-			g.drawLine(this.x+this.upRightPoint.x,
-			this.y+this.upRightPoint.y-this._rightH,
-			this.x+this.downRightPoint.x,
-			this.y+this.downRightPoint.y-this._rightH,
-			heighColor);
+			if (this.leftBlock || this._leftH > 0){
+				g.drawLine(this.x+this.upLeftPoint.x,
+				this.y+this.upLeftPoint.y,
+				this.x+this.upLeftPoint.x,
+				this.y+this.upLeftPoint.y-this._leftH,
+				heighColor);
+				g.drawLine(this.x+this.downleftPoint.x,
+				this.y+this.downleftPoint.y,
+				this.x+this.downleftPoint.x,
+				this.y+this.downleftPoint.y-this._leftH,
+				heighColor);
+				g.drawLine(this.x+this.upLeftPoint.x,
+				this.y+this.upLeftPoint.y-this._leftH,
+				this.x+this.downleftPoint.x,
+				this.y+this.downleftPoint.y-this._leftH,
+				heighColor);
+			}
+			if (this.rightBlock || this._rightH > 0){
+				g.drawLine(this.x+this.upRightPoint.x,
+				this.y+this.upRightPoint.y,
+				this.x+this.upRightPoint.x,
+				this.y+this.upRightPoint.y-this._rightH,
+				heighColor);
+				g.drawLine(this.x+this.downRightPoint.x,
+				this.y+this.downRightPoint.y,
+				this.x+this.downRightPoint.x,
+				this.y+this.downRightPoint.y-this._rightH,
+				heighColor);
+				g.drawLine(this.x+this.upRightPoint.x,
+				this.y+this.upRightPoint.y-this._rightH,
+				this.x+this.downRightPoint.x,
+				this.y+this.downRightPoint.y-this._rightH,
+				heighColor);
+			}
 			g.drawCircle(this.x,this.y,3,pointColor);
 		}
 

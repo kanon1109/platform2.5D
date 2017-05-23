@@ -128,10 +128,10 @@ public class Body
 				{
 					//非跳跃时的下落face搜索
 					var count:int = FaceMangager.faceAry.length;
+					var posY:Number = this.prevFaceY;
 					for (var i:int = 0; i < count; ++i)
 					{
 						var face:Surface = FaceMangager.faceAry[i];
-						var posY:Number = this.prevFaceY;
 						if (this.prevFace != face)
 						{
 							if (this.prevFace.z == face.z)
@@ -164,15 +164,15 @@ public class Body
 			{
 				if (this.jumpVy >= 0)
 				{
-					trace("positionState", this.positionState);
+					//trace("positionState", this.positionState);
 					if (this.positionState == UP)
 					{
 						var faceAry:Array = FaceMangager.seachTopJumpFaceRange(this.x, this.prevZ, this.thick);
 						var count:int = faceAry.length; 
-						for (var i:int = 0; i < count; i++) 
+						var posY:Number = Infinity;
+						for (var i:int = 0; i < count; i++)
 						{
 							var face:Surface = faceAry[i];
-							var posY:Number = Infinity;
 							if (face.z - 1 == this.prevZ)
 							{
 								posY = face.downPosY;
@@ -195,8 +195,56 @@ public class Body
 							}
 						}
 					}
-					else if (this.positionState == NONE || 
-							 this.positionState == DOWN)
+					else if (this.positionState == NONE)
+					{
+						if (this.jumpVx == 0)
+						{
+							//原地跳跃
+							if (this.y >= this.prevFaceY && this.prevY < this.prevFaceY)
+							{
+								this.isJump = false;
+								this.face = this.prevFace;
+								this.y = this.prevFaceY;
+								this.jumpVy = 0;
+								this.vy = 0;
+								this.positionState = NONE;
+								return;
+							}
+						}
+						else
+						{
+							//左右跳跃非左右跳跃
+							var count:int = FaceMangager.faceAry.length;
+							var posY:Number = this.prevFaceY;
+							for (var i:int = 0; i < count; ++i)
+							{
+								var face:Surface = FaceMangager.faceAry[i];
+								if (this.prevFace != face)
+								{
+									if (this.prevFace.z == face.z)
+									{
+										//同一深度的face
+										var height:Number = face.downPosY - this.prevFace.downPosY;
+										if (this.prevFace != face) posY = this.prevFaceY + height;
+										else posY = this.prevFaceY;
+									}
+								}
+								if (this.y >= posY && this.prevY < posY)
+								{
+									this.face = face;
+									this.isJump = false;
+									this.y = posY;
+									this.jumpVx = 0;
+									this.jumpVy = 0;
+									this.vx = 0;
+									this.vy = 0;
+									this.positionState = NONE;
+									return;
+								}
+							}
+						}
+					} 
+					else if (this.positionState == DOWN)
 					{
 						if (this.jumpVx == 0)
 						{
@@ -213,35 +261,31 @@ public class Body
 						}
 						else
 						{
-							var count:int = FaceMangager.faceAry.length;
-							for (var i:int = 0; i < count; ++i)
+							//左右非原地跳跃
+							var faceAry:Array = FaceMangager.seachBottomJumpFaceRange(this.x, this.prevZ, this.thick);
+							var count:int = faceAry.length;
+							var posY:Number = this.prevFaceY;
+							for (var i:int = 0; i < count; i++)
 							{
-								var face:Surface = FaceMangager.faceAry[i];
-								var posY:Number = this.prevFaceY;
-								if (this.prevFace != face)
+								var face:Surface = faceAry[i];
+								if (face.z - 1 == this.prevZ)
 								{
-									if (this.prevFace.z == face.z)
-									{
-										//同一深度的face
-										var height:Number = face.downPosY - this.prevFace.downPosY;
-										posY = this.prevFaceY + height;
-									}
-									else if (this.prevFace.z - 1 == face.z)
-									{
-										//下边界下落
-										if (face.inUpRange(this.x, this.thick))
-											posY = face.upPosY;
-									}
+									//下层
+								}
+								if (face.z == this.prevZ)
+								{
+									//同层
 								}
 								if (this.y >= posY && this.prevY < posY)
 								{
-									this.face = face;
 									this.isJump = false;
+									this.face = face;
 									this.y = posY;
 									this.jumpVx = 0;
 									this.jumpVy = 0;
 									this.vx = 0;
 									this.vy = 0;
+									this.positionState = NONE;
 									return;
 								}
 							}
