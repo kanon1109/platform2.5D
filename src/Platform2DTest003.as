@@ -123,7 +123,7 @@ public class Platform2DTest003
 		Laya.stage.on(Event.KEY_DOWN, this, onKeyDown);
 		Laya.stage.on(Event.KEY_PRESS, this, onKeyPress);
 		Laya.stage.on(Event.KEY_UP, this, onKeyUp);
-		Laya.timer.frameLoop(1, this, loop);
+		Laya.timer.frameLoop(20, this, loop);
 	}
 	
 	private function onKeyPress(e:*=null):void 
@@ -160,8 +160,8 @@ public class Platform2DTest003
 	{
 		FaceMangager.debugFace(this.spt.graphics);
 		this.body.update();
-		if (this.body.face)
-			this.body.face.debugDraw(this.spt.graphics, "#00FF80");
+		//if (this.body.face)
+			//this.body.face.debugDraw(this.spt.graphics, "#00FF80");
 	}
 }
 }
