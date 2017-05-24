@@ -112,6 +112,7 @@ public class Body
 			{
 				this.prevFaceY = this.y;
 				this.prevFace = this.face;
+				this.prevZ = this.face.z;
 				this.face = FaceMangager.seachLinkFace(this.x, this.y, this.thick);
 			}
 		}
@@ -134,13 +135,13 @@ public class Body
 						var face:Surface = FaceMangager.faceAry[i];
 						if (this.prevFace != face)
 						{
-							if (this.prevFace.z == face.z)
+							if (this.prevZ == face.z)
 							{
 								//同一深度的face
 								var height:Number = face.downPosY - this.prevFace.downPosY;
 								posY = this.prevFaceY + height;
 							}
-							else if (this.prevFace.z - 1 == face.z)
+							else if (this.prevZ - 1 == face.z)
 							{
 								//下边界下落
 								if (face.inUpRange(this.x, this.thick))
@@ -213,14 +214,14 @@ public class Body
 						}
 						else
 						{
-							//左右跳跃非左右跳跃
+							//左右跳跃
 							var count:int = FaceMangager.faceAry.length;
 							var posY:Number = this.prevFaceY;
 							for (var i:int = 0; i < count; ++i)
 							{
 								var face:Surface = FaceMangager.faceAry[i];
 								var nextFace:Surface;
-								if (this.prevFace.z == face.z)
+								if (this.prevZ == face.z)
 								{
 									//同一深度的face
 									var height:Number = face.downPosY - this.prevFace.downPosY;
@@ -260,30 +261,25 @@ public class Body
 						}
 						else
 						{
-							//左右非原地跳跃
+							//左右跳跃
 							var faceAry:Array = FaceMangager.seachBottomJumpFaceRange(this.x, this.prevZ, this.thick);
 							var count:int = faceAry.length;
+							var posY:Number = this.prevFaceY;
 							for (var i:int = 0; i < count; i++)
 							{
 								var face:Surface = faceAry[i];
-								var posY:Number = this.prevFaceY;
 								var nextFace:Surface;
-								if (face.z - 1 == this.prevZ)
+								if (face.z + 1 == this.prevZ)
 								{
 									//下层
 									posY = face.upPosY;
-									if (face.inUpRange(this.x, posY, this.thick))
-										nextFace = face;
+									nextFace = face;
 								}
 								else if (face.z == this.prevZ)
 								{
 									//同层
 									posY = face.downPosY;
-									if (face.inDownRange(this.x, posY, this.thick))
-									{
-										trace("face", face.name);
-										nextFace = face;
-									}
+									nextFace = face;
 								}
 								if (nextFace && this.y >= posY && this.prevY < posY)
 								{

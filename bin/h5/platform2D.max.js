@@ -458,6 +458,7 @@ var Laya=window.Laya=(function(window,document){
 				if (!this.face.inFaceRage(this.x,this.y,this.thick)){
 					this.prevFaceY=this.y;
 					this.prevFace=this.face;
+					this.prevZ=this.face.z;
 					this.face=FaceMangager.seachLinkFace(this.x,this.y,this.thick);
 				}
 			}
@@ -472,11 +473,11 @@ var Laya=window.Laya=(function(window,document){
 						for (var i=0;i < count;++i){
 							var face=FaceMangager.faceAry[i];
 							if (this.prevFace !=face){
-								if (this.prevFace.z==face.z){
+								if (this.prevZ==face.z){
 									var height=face.downPosY-this.prevFace.downPosY;
 									posY=this.prevFaceY+height;
 								}
-								else if (this.prevFace.z-1==face.z){
+								else if (this.prevZ-1==face.z){
 									if (face.inUpRange(this.x,this.thick))
 										posY=face.upPosY;
 								}
@@ -538,7 +539,7 @@ var Laya=window.Laya=(function(window,document){
 								for (var i=0;i < count;++i){
 									var face=FaceMangager.faceAry[i];
 									var nextFace;
-									if (this.prevFace.z==face.z){
+									if (this.prevZ==face.z){
 										var height=face.downPosY-this.prevFace.downPosY;
 										posY=this.prevFaceY+height;
 										if (face.inFaceRage(this.x,posY,this.thick))
@@ -572,21 +573,17 @@ var Laya=window.Laya=(function(window,document){
 							else{
 								var faceAry=FaceMangager.seachBottomJumpFaceRange(this.x,this.prevZ,this.thick);
 								var count=faceAry.length;
+								var posY=this.prevFaceY;
 								for (var i=0;i < count;i++){
 									var face=faceAry[i];
-									var posY=this.prevFaceY;
 									var nextFace;
-									if (face.z-1==this.prevZ){
+									if (face.z+1==this.prevZ){
 										posY=face.upPosY;
-										if (face.inUpRange(this.x,posY,this.thick))
-											nextFace=face;
+										nextFace=face;
 									}
 									else if (face.z==this.prevZ){
 										posY=face.downPosY;
-										if (face.inDownRange(this.x,posY,this.thick)){
-											console.log("face",face.name);
-											nextFace=face;
-										}
+										nextFace=face;
 									}
 									if (nextFace && this.y >=posY && this.prevY < posY){
 										this.isJump=false;
@@ -1066,9 +1063,9 @@ var Laya=window.Laya=(function(window,document){
 			var count=FaceMangager.faceAry.length;
 			for (var i=0;i < count;i++){
 				var face=FaceMangager.faceAry[i];
-				if (z-1==face.z && face.inDownRange(x,thick))
+				if (z-1==face.z && face.inUpRange(x,thick))
 					arr.push(face);
-				if (z==face.z && face.inUpRange(x,thick))
+				if (z==face.z && face.inDownRange(x,thick))
 					arr.push(face);
 			}
 			arr.sort(function(a,b){return a.z > b.z ? 1 :-1});
@@ -1197,7 +1194,7 @@ var Laya=window.Laya=(function(window,document){
 			Laya.stage.on("keydown",this,this.onKeyDown);
 			Laya.stage.on("keypress",this,this.onKeyPress);
 			Laya.stage.on("keyup",this,this.onKeyUp);
-			Laya.timer.frameLoop(20,this,this.loop);
+			Laya.timer.frameLoop(1,this,this.loop);
 		}
 
 		__class(Platform2DTest003,'Platform2DTest003');
@@ -1228,6 +1225,8 @@ var Laya=window.Laya=(function(window,document){
 		__proto.loop=function(){
 			FaceMangager.debugFace(this.spt.graphics);
 			this.body.update();
+			if (this.body.face)
+				this.body.face.debugDraw(this.spt.graphics,"#00FF80");
 		}
 
 		Platform2DTest003.g=null

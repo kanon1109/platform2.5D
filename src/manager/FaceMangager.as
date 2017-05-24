@@ -139,10 +139,10 @@ public class FaceMangager
 		{
 			var face:Surface = faceAry[i];
 			//向下查找
-			if (z - 1 == face.z && face.inDownRange(x, thick))
+			if (z - 1 == face.z && face.inUpRange(x, thick))
 				arr.push(face);
 			//同级查找
-			if (z == face.z && face.inUpRange(x, thick))
+			if (z == face.z && face.inDownRange(x, thick))
 				arr.push(face);
 		}
 		arr.sort(function(a:Surface, b:Surface):Number { return a.z > b.z ? 1 : -1});
