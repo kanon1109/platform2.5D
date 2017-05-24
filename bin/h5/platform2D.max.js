@@ -386,9 +386,9 @@ var Laya=window.Laya=(function(window,document){
 	*[区分跳跃时下落和移动时下落]
 	*[跳跃时限制左右移动]
 	*[跳跃时不判断face的cage]
-	*跳跃后触底在判断face
+	*[跳跃后触底在判断face]
+	*[跨高度搜索face]
 	*跳跃判断高度
-	*跨高度搜索face
 	*碰壁后反弹
 	*@author Kanon
 	*/
@@ -623,7 +623,7 @@ var Laya=window.Laya=(function(window,document){
 
 		/**
 		*跳跃
-		*@param speed
+		*@param speed 速度
 		*/
 		__proto.jump=function(speed){
 			if (this.isJump || !this.face)return;
@@ -637,7 +637,7 @@ var Laya=window.Laya=(function(window,document){
 
 		/**
 		*横向移动
-		*@param vx
+		*@param vx 速度
 		*/
 		__proto.moveH=function(vx){
 			if (this.isJump || !this.face)return;
@@ -646,7 +646,7 @@ var Laya=window.Laya=(function(window,document){
 
 		/**
 		*纵向移动
-		*@param vy
+		*@param vy 速度
 		*/
 		__proto.moveV=function(vy){
 			if (this.isJump || !this.face)return;
@@ -1116,7 +1116,6 @@ var Laya=window.Laya=(function(window,document){
 			face.z=0;
 			face.upBlock=true;
 			face.leftBlock=true;
-			face.downBlock=true;
 			FaceMangager.add(face);
 			face=new Surface(50,0,150,100,0,50);
 			face.name="downface2";
@@ -1136,6 +1135,25 @@ var Laya=window.Laya=(function(window,document){
 			face.rightBlock=true;
 			face.downBlock=true;
 			face.leftH=30;
+			face=new Surface(0,50,100,150,0,50);
+			face.name="downface4";
+			face.x=startX-50;
+			face.y=420;
+			face.z=-1;
+			face.upBlock=true;
+			face.leftBlock=true;
+			face.downBlock=true;
+			face.rightH=30;
+			FaceMangager.add(face);
+			face=new Surface(0,50,100,150,0,50);
+			face.name="downface5";
+			face.x=startX+100-50;
+			face.y=420-30;
+			face.z=-1;
+			face.upBlock=true;
+			face.leftBlock=false;
+			face.downBlock=true;
+			face.rightH=30;
 			FaceMangager.add(face);
 			face=new Surface(50,0,150,100,0,50);
 			face.name="middleface1";

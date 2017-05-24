@@ -12,9 +12,9 @@ import manager.FaceMangager;
  * [区分跳跃时下落和移动时下落]
  * [跳跃时限制左右移动]
  * [跳跃时不判断face的cage]
- * 跳跃后触底在判断face
+ * [跳跃后触底在判断face]
+ * [跨高度搜索face]
  * 跳跃判断高度
- * 跨高度搜索face
  * 碰壁后反弹
  * @author Kanon
  */
@@ -330,7 +330,7 @@ public class Body
 	
 	/**
 	 * 跳跃
-	 * @param	speed
+	 * @param	speed	速度
 	 */
 	public function jump(speed:Number):void
 	{
@@ -345,7 +345,7 @@ public class Body
 	
 	/**
 	 * 横向移动
-	 * @param	vx
+	 * @param	vx	速度
 	 */
 	public function moveH(vx:Number):void
 	{
@@ -355,7 +355,7 @@ public class Body
 	
 	/**
 	 * 纵向移动
-	 * @param	vy
+	 * @param	vy	速度
 	 */
 	public function moveV(vy:Number):void
 	{

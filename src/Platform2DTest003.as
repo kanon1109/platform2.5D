@@ -40,6 +40,7 @@ public class Platform2DTest003
 		this.body.display = ball;
 		
 		//最下层
+		
 		var startX:Number = 80;
 		var gapH:Number = 21;
 		var face:Surface = new Surface(50, 0, 150, 100, 0, 50);
@@ -49,7 +50,7 @@ public class Platform2DTest003
 		face.z = 0;
 		face.upBlock = true;
 		face.leftBlock = true;
-		face.downBlock = true;
+		//face.downBlock = true;
 		FaceMangager.add(face);
 		
 		face = new Surface(50, 0, 150, 100, 0, 50);
@@ -72,6 +73,30 @@ public class Platform2DTest003
 		face.rightBlock = true;
 		face.downBlock = true;
 		face.leftH = 30;
+		//FaceMangager.add(face);
+		
+		
+		face = new Surface(0, 50, 100, 150, 0, 50);
+		face.name = "downface4";
+		face.x = startX - 50;
+		face.y = 420;
+		face.z = -1;
+		face.upBlock = true;
+		face.leftBlock = true;
+		face.downBlock = true;
+		face.rightH = 30;
+		FaceMangager.add(face);
+		
+		
+		face = new Surface(0, 50, 100, 150, 0, 50);
+		face.name = "downface5";
+		face.x = startX + 100 - 50;
+		face.y = 420 - 30;
+		face.z = -1;
+		face.upBlock = true;
+		face.leftBlock = false;
+		face.downBlock = true;
+		face.rightH = 30;
 		FaceMangager.add(face);
 		
 		//中间层
