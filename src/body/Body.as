@@ -137,25 +137,20 @@ public class Body
 						{
 							if (this.prevZ == face.z)
 							{
-								//同一深度的face
+								//同一层的face
 								var height:Number = face.downPosY - this.prevFace.downPosY;
 								posY = this.prevFaceY + height;
 							}
 							else if (this.prevZ - 1 == face.z)
 							{
-								//下边界下落
-								if (face.inUpRange(this.x, this.thick))
+								//下一层 
+								if (face.inUpRange(this.x, this.thick) && this.positionState == DOWN)
 									posY = face.upPosY;
 							}
 						}
 						if (this.y >= posY && this.prevY < posY)
 						{
-							this.face = face;
-							this.y = posY;
-							this.jumpVx = 0;
-							this.jumpVy = 0;
-							this.vx = 0;
-							this.vy = 0;
+							this.touchDown(face, posY);
 							return;
 						}
 					}
@@ -174,24 +169,18 @@ public class Body
 						for (var i:int = 0; i < count; i++)
 						{
 							var face:Surface = faceAry[i];
-							if (face.z - 1 == this.prevZ)
+							if (this.prevZ + 1 == face.z)
 							{
+								//上一层
 								posY = face.downPosY;
 							}
-							else if (face.z == this.prevZ)
+							else if (this.prevZ == face.z)
 							{
 								posY = face.upPosY;
 							}
 							if (this.y >= posY && this.prevY < posY)
 							{
-								this.isJump = false;
-								this.face = face;
-								this.y = posY;
-								this.jumpVx = 0;
-								this.jumpVy = 0;
-								this.vx = 0;
-								this.vy = 0;
-								this.positionState = NONE;
+								this.touchDown(face, posY);
 								return;
 							}
 						}
@@ -203,12 +192,7 @@ public class Body
 							//原地跳跃
 							if (this.y >= this.prevFaceY && this.prevY < this.prevFaceY)
 							{
-								this.isJump = false;
-								this.face = this.prevFace;
-								this.y = this.prevFaceY;
-								this.jumpVy = 0;
-								this.vy = 0;
-								this.positionState = NONE;
+								this.touchDown(this.prevFace, this.prevFaceY);
 								return;
 							}
 						}
@@ -223,7 +207,7 @@ public class Body
 								var nextFace:Surface;
 								if (this.prevZ == face.z)
 								{
-									//同一深度的face
+									//同一层的face
 									var height:Number = face.downPosY - this.prevFace.downPosY;
 									posY = this.prevFaceY + height;
 									if (face.inFaceRage(this.x, posY, this.thick))
@@ -231,14 +215,7 @@ public class Body
 								}
 								if (nextFace && this.y >= posY && this.prevY < posY)
 								{
-									this.face = nextFace;
-									this.isJump = false;
-									this.y = posY;
-									this.jumpVx = 0;
-									this.jumpVy = 0;
-									this.vx = 0;
-									this.vy = 0;
-									this.positionState = NONE;
+									this.touchDown(nextFace, posY);
 									return;
 								}
 							}
@@ -251,11 +228,7 @@ public class Body
 							//原地跳跃
 							if (this.y >= this.prevFaceY && this.prevY < this.prevFaceY)
 							{
-								this.isJump = false;
-								this.face = this.prevFace;
-								this.y = this.prevFaceY;
-								this.jumpVy = 0;
-								this.positionState = NONE;
+								this.touchDown(this.prevFace, this.prevFaceY);
 								return;
 							}
 						}
@@ -269,13 +242,13 @@ public class Body
 							{
 								var face:Surface = faceAry[i];
 								var nextFace:Surface;
-								if (face.z + 1 == this.prevZ)
+								if (this.prevZ - 1 == face.z)
 								{
 									//下层
 									posY = face.upPosY;
 									nextFace = face;
 								}
-								else if (face.z == this.prevZ)
+								else if (this.prevZ == face.z)
 								{
 									//同层
 									posY = face.downPosY;
@@ -283,14 +256,7 @@ public class Body
 								}
 								if (nextFace && this.y >= posY && this.prevY < posY)
 								{
-									this.isJump = false;
-									this.face = nextFace;
-									this.y = posY;
-									this.jumpVx = 0;
-									this.jumpVy = 0;
-									this.vx = 0;
-									this.vy = 0;
-									this.positionState = NONE;
+									this.touchDown(nextFace, posY);
 									return;
 								}
 							}
@@ -299,6 +265,22 @@ public class Body
 				}
 			}
 		}
+	}
+	
+	/**
+	 * 触地
+	 * @param	face		所在的face
+	 * @param	posY		y坐标位置
+	 */
+	protected function touchDown(face:Surface, posY:Number):void
+	{
+		this.isJump = false;
+		this.face = face;
+		this.y = posY;
+		this.jumpVx = 0;
+		this.jumpVy = 0;
+		this.vx = 0;
+		this.vy = 0;
 	}
 	
 	/**
