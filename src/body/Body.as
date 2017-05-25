@@ -218,9 +218,12 @@ public class Body
 								{
 									//同一层的face
 									var height:Number = face.downPosY - this.prevFace.downPosY;
-									posY = this.prevFaceY + height;
-									if (face.inFaceRage(this.x, posY, this.thick))
+									var curPosY:Number = this.prevFaceY + height;
+									if (face.inFaceRage(this.x, curPosY, this.thick))
+									{
+										posY = curPosY;
 										nextFace = face;
+									}
 								}
 								if (nextFace && this.y >= posY && this.prevY < posY)
 								{

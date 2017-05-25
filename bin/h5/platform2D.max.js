@@ -531,9 +531,11 @@ var Laya=window.Laya=(function(window,document){
 									var nextFace;
 									if (this.prevZ==face.z){
 										var height=face.downPosY-this.prevFace.downPosY;
-										posY=this.prevFaceY+height;
-										if (face.inFaceRage(this.x,posY,this.thick))
+										var curPosY=this.prevFaceY+height;
+										if (face.inFaceRage(this.x,curPosY,this.thick)){
+											posY=curPosY;
 											nextFace=face;
+										}
 									}
 									if (nextFace && this.y >=posY && this.prevY < posY){
 										this.touchDown(nextFace,posY);
