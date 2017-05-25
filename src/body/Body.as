@@ -133,24 +133,33 @@ public class Body
 					for (var i:int = 0; i < count; ++i)
 					{
 						var face:Surface = FaceMangager.faceAry[i];
+						var nextFace:Surface;
 						if (this.prevFace != face)
 						{
 							if (this.prevZ == face.z)
 							{
 								//同一层的face
 								var height:Number = face.downPosY - this.prevFace.downPosY;
-								posY = this.prevFaceY + height;
+								var curPosY:Number = this.prevFaceY + height;
+								if (face.inFaceRage(this.x, curPosY, this.thick))
+								{
+									posY = curPosY;
+									nextFace = face;
+								}
 							}
 							else if (this.prevZ - 1 == face.z)
 							{
 								//下一层 
 								if (face.inUpRange(this.x, this.thick) && this.positionState == DOWN)
+								{
 									posY = face.upPosY;
+									nextFace = face;
+								}
 							}
 						}
-						if (this.y >= posY && this.prevY < posY)
+						if (nextFace && this.y >= posY && this.prevY < posY)
 						{
-							this.touchDown(face, posY);
+							this.touchDown(nextFace, posY);
 							return;
 						}
 					}

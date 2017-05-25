@@ -472,18 +472,25 @@ var Laya=window.Laya=(function(window,document){
 						var posY=this.prevFaceY;
 						for (var i=0;i < count;++i){
 							var face=FaceMangager.faceAry[i];
+							var nextFace;
 							if (this.prevFace !=face){
 								if (this.prevZ==face.z){
 									var height=face.downPosY-this.prevFace.downPosY;
-									posY=this.prevFaceY+height;
+									var curPosY=this.prevFaceY+height;
+									if (face.inFaceRage(this.x,curPosY,this.thick)){
+										posY=curPosY;
+										nextFace=face;
+									}
 								}
 								else if (this.prevZ-1==face.z){
-									if (face.inUpRange(this.x,this.thick)&& this.positionState==4)
+									if (face.inUpRange(this.x,this.thick)&& this.positionState==4){
 										posY=face.upPosY;
+										nextFace=face;
+									}
 								}
 							}
-							if (this.y >=posY && this.prevY < posY){
-								this.touchDown(face,posY);
+							if (nextFace && this.y >=posY && this.prevY < posY){
+								this.touchDown(nextFace,posY);
 								return;
 							}
 						}
@@ -1135,6 +1142,7 @@ var Laya=window.Laya=(function(window,document){
 			face.rightBlock=true;
 			face.downBlock=true;
 			face.leftH=30;
+			FaceMangager.add(face);
 			face=new Surface(0,50,100,150,0,50);
 			face.name="downface4";
 			face.x=startX-50;

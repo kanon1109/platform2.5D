@@ -73,7 +73,7 @@ public class Platform2DTest003
 		face.rightBlock = true;
 		face.downBlock = true;
 		face.leftH = 30;
-		//FaceMangager.add(face);
+		FaceMangager.add(face);
 		
 		
 		face = new Surface(0, 50, 100, 150, 0, 50);
