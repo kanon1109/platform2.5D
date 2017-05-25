@@ -52,8 +52,15 @@ public class FaceMangager
 		}
 	}
 	
+	
+	public static function seachSameDepthCurRangeFace(x:Number, y:Number, z:Number, 
+													  thick:Number, bodyDirection:int, ):Surface
+	{
+		
+	}
+	
 	/**
-	 * 在一个面上判断上下是否有限制
+	 * 在一个面上判断上下是否有限制(用于两边相邻的face的upBlock为true时判断)
 	 * @param	face		面
 	 * @param	body		物体
 	 */

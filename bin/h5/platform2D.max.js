@@ -388,6 +388,7 @@ var Laya=window.Laya=(function(window,document){
 	*[跳跃时不判断face的cage]
 	*[跳跃后触底在判断face]
 	*[跨高度搜索face]
+	*block边跳跃反弹
 	*跳跃判断高度
 	*碰壁后反弹
 	*@author Kanon
@@ -576,6 +577,13 @@ var Laya=window.Laya=(function(window,document){
 					}
 				}
 			}
+		}
+
+		/**
+		*碰壁反弹
+		*/
+		__proto.blockSpring=function(){
+			this.jumpVx=-this.jumpVx;
 		}
 
 		/**
@@ -1003,6 +1011,7 @@ var Laya=window.Laya=(function(window,document){
 			}
 		}
 
+		FaceMangager.seachSameDepthCurRangeFace=function(x,y,z,){}
 		FaceMangager.restrictInFace=function(face,body){
 			if (!face || !body)return;
 			if (face.leftRestrict){

@@ -14,6 +14,7 @@ import manager.FaceMangager;
  * [跳跃时不判断face的cage]
  * [跳跃后触底在判断face]
  * [跨高度搜索face]
+ * block边跳跃反弹
  * 跳跃判断高度
  * 碰壁后反弹
  * @author Kanon
@@ -277,6 +278,14 @@ public class Body
 				}
 			}
 		}
+	}
+	
+	/**
+	 * 碰壁反弹
+	 */
+	protected function blockSpring():void
+	{
+		this.jumpVx = -this.jumpVx;
 	}
 	
 	/**
