@@ -52,11 +52,30 @@ public class FaceMangager
 		}
 	}
 	
-	
-	public static function seachSameDepthCurRangeFace(x:Number, y:Number, z:Number, 
-													  thick:Number, bodyDirection:int, ):Surface
+	/**
+	 * 搜索跳跃腾空时当前脚底下的face
+	 * @param	body	物体
+	 * @return
+	 */
+	public static function seachSameDepthCurRangeFace(body:Body):Surface
 	{
-		
+		if (!body.prevFace) return null;
+		var count:int = faceAry.length;
+		for (var i:int = 0; i < count; i++) 
+		{
+			var face:Surface = faceAry[i];
+			if (face.z == body.prevZ)
+			{
+				//计算 body.prevY  高度
+				var height:Number = face.downRightPoint.y - body.prevFace.downRightPoint.y;
+				var posY:Number = body.prevY + height;
+				if (face.inFaceRage(body.x, posY, body.thick))
+				{
+					return face;
+				}
+			}
+		}
+		return null;
 	}
 	
 	/**

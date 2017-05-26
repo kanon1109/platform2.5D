@@ -16,6 +16,7 @@ public class Platform2DTest003
 	public static var g:Graphics;
 	private var spt:Sprite;
 	private var ball:Sprite;
+	private var rect:Sprite;
 	private var faceArr:Array;
 	private var vx:Number = 0;
 	private var vy:Number = 0;
@@ -33,10 +34,16 @@ public class Platform2DTest003
 		Laya.stage.addChild(this.spt);
 		Laya.stage.addChild(this.ball);
 		
+		this.rect = new Sprite();
+		this.rect.graphics.drawRect(0, 0, 10, 10, "#ff0000");
+		Laya.stage.addChild(this.rect);
+
+		
 		this.body = new Body();
 		this.body.x = 100;
 		this.body.y = 200;
 		this.body.thick = 10;
+		this.body.g = 0.4;
 		this.body.display = ball;
 		
 		//最下层
@@ -76,14 +83,14 @@ public class Platform2DTest003
 		FaceMangager.add(face);
 		
 		
-		face = new Surface(0, 50, 100, 150, 0, 50);
+		face = new Surface(0, 0, 100, 150, 0, 50);
 		face.name = "downface4";
 		face.x = startX - 50;
 		face.y = 420;
 		face.z = -1;
 		face.upBlock = true;
 		face.leftBlock = true;
-		face.downBlock = true;
+		face.downBlock = false;
 		face.rightH = 30;
 		FaceMangager.add(face);
 		
@@ -93,6 +100,29 @@ public class Platform2DTest003
 		face.x = startX + 100 - 50;
 		face.y = 420 - 30;
 		face.z = -1;
+		face.upBlock = true;
+		face.leftBlock = false;
+		face.downBlock = false;
+		face.rightH = 30;
+		FaceMangager.add(face);
+		
+		
+		face = new Surface(0, 0, 100, 100, 0, 0);
+		face.name = "downface6";
+		face.x = startX - 50;
+		face.y = 420 + 190;
+		face.z = -2;
+		face.upBlock = true;
+		face.leftBlock = true;
+		face.downBlock = true;
+		face.rightH = 90;
+		FaceMangager.add(face);
+		
+		face = new Surface(0, 0, 100, 100, 0, 0);
+		face.name = "downface7";
+		face.x = startX - 50 + 100;
+		face.y = 420 + 100;
+		face.z = -2;
 		face.upBlock = true;
 		face.leftBlock = false;
 		face.downBlock = true;
@@ -187,6 +217,12 @@ public class Platform2DTest003
 		this.body.update();
 		if (this.body.face)
 			this.body.face.debugDraw(this.spt.graphics, "#00FF80");
+			
+		if ( this.body.prevFace)
+		{
+			this.rect.x = this.body.prevFace.x + this.body.prevFace.upLeftPoint.x + 30;
+			this.rect.y = this.body.prevFace.y + this.body.prevFace.upLeftPoint.y + 30;
+		}
 	}
 }
 }

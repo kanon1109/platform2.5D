@@ -397,7 +397,7 @@ var Laya=window.Laya=(function(window,document){
 	var Body=(function(){
 		function Body(){
 			this.isJump=false;
-			this.positionState=0;
+			this.positionVerticalState=0;
 			this.prevFaceY=NaN;
 			this.vx=0;
 			this.prevVx=0;
@@ -415,6 +415,7 @@ var Laya=window.Laya=(function(window,document){
 			this.display=null;
 			this.thick=0;
 			this.direction=0;
+			this.tempFace=null;
 		}
 
 		__class(Body,'body.Body');
@@ -484,13 +485,14 @@ var Laya=window.Laya=(function(window,document){
 									}
 								}
 								else if (this.prevZ-1==face.z){
-									if (face.inUpRange(this.x,this.thick)&& this.positionState==4){
+									if (face.inUpRange(this.x,this.thick)&& this.positionVerticalState==4){
 										posY=face.upPosY;
 										nextFace=face;
 									}
 								}
 							}
 							if (nextFace && this.y >=posY && this.prevY < posY){
+								console.log(nextFace.name,posY);
 								this.touchDown(nextFace,posY);
 								return;
 							}
@@ -499,7 +501,7 @@ var Laya=window.Laya=(function(window,document){
 				}
 				else{
 					if (this.jumpVy >=0){
-						if (this.positionState==3){
+						if (this.positionVerticalState==3){
 							var faceAry=FaceMangager.seachTopJumpFaceRange(this.x,this.prevZ,this.thick);
 							var count=faceAry.length;
 							var posY=Infinity;
@@ -517,7 +519,7 @@ var Laya=window.Laya=(function(window,document){
 								}
 							}
 						}
-						else if (this.positionState==0){
+						else if (this.positionVerticalState==0){
 							if (this.jumpVx==0){
 								if (this.y >=this.prevFaceY && this.prevY < this.prevFaceY){
 									this.touchDown(this.prevFace,this.prevFaceY);
@@ -545,7 +547,7 @@ var Laya=window.Laya=(function(window,document){
 								}
 							}
 						}
-						else if (this.positionState==4){
+						else if (this.positionVerticalState==4){
 							if (this.jumpVx==0){
 								if (this.y >=this.prevFaceY && this.prevY < this.prevFaceY){
 									this.touchDown(this.prevFace,this.prevFaceY);
@@ -577,6 +579,12 @@ var Laya=window.Laya=(function(window,document){
 					}
 				}
 			}
+		}
+
+		__proto.jumpCage=function(){
+			if (!this.isJump)return;
+			this.tempFace=FaceMangager.seachSameDepthCurRangeFace(this);
+			if (this.tempFace)console.log("face",this.tempFace.name);
 		}
 
 		/**
@@ -631,11 +639,11 @@ var Laya=window.Laya=(function(window,document){
 		__proto.updateFacePosState=function(face){
 			if (!face)return;
 			if (this.y <=face.upPosY)
-				this.positionState=3;
+				this.positionVerticalState=3;
 			else if (this.y >=face.downPosY)
-			this.positionState=4;
+			this.positionVerticalState=4;
 			else
-			this.positionState=0;
+			this.positionVerticalState=0;
 		}
 
 		/**
@@ -679,6 +687,7 @@ var Laya=window.Laya=(function(window,document){
 			this.updateJumpVx();
 			this.updateFacePosState(this.face);
 			this.updateFace();
+			this.jumpCage();
 			this.updateDisplay();
 		}
 
@@ -737,7 +746,8 @@ var Laya=window.Laya=(function(window,document){
 		*@return 左边边界的坐标
 		*/
 		__proto.getLeftRange=function(posY){
-			if (Math.abs(this.leftSkew)==90)return this.x+this.upLeftPoint.x;
+			if (Math.abs(this.leftSkew)==90 ||
+				Math.abs(this.leftSkew)==0)return this.x+this.upLeftPoint.x;
 			var skew=this.leftSkew;
 			if (skew > 90)skew=180-this.leftSkew;
 			var rand=skew *Math.PI / 180;
@@ -756,7 +766,8 @@ var Laya=window.Laya=(function(window,document){
 		*@return 右边边界的坐标
 		*/
 		__proto.getRightRange=function(posY){
-			if (Math.abs(this.rightSkew)==90)return this.x+this.upRightPoint.x;
+			if (Math.abs(this.rightSkew)==90 ||
+				Math.abs(this.rightSkew)==0)return this.x+this.upRightPoint.x;
 			var skew=this.rightSkew;
 			if (skew > 90)skew=180-this.rightSkew;
 			var rand=skew *Math.PI / 180;
@@ -771,7 +782,7 @@ var Laya=window.Laya=(function(window,document){
 
 		/**
 		*是否在横向范围内
-		*@param posY 当前的y坐标
+		*@param posY body的y坐标
 		*@return
 		*/
 		__proto.inVerticalRange=function(posY){
@@ -781,7 +792,7 @@ var Laya=window.Laya=(function(window,document){
 
 		/**
 		*是否在左上范围内
-		*@param posX 当前x坐标
+		*@param posX body的x坐标
 		*@param thick body的厚度
 		*@return
 		*/
@@ -792,13 +803,41 @@ var Laya=window.Laya=(function(window,document){
 
 		/**
 		*是否在右上范围内
-		*@param posX 当前x坐标
+		*@param posX body的x坐标
 		*@param thick body的厚度
 		*@return
 		*/
 		__proto.inRightUpRange=function(posX,thick){
 			(thick===void 0)&& (thick=0);
 			return posX <=this.x+this.upRightPoint.x+thick;
+		}
+
+		/**
+		*是否在左边界
+		*@param posX body的x坐标
+		*@param posY body的y坐标
+		*@param thick body的厚度
+		*@return
+		*/
+		__proto.inLeft=function(posX,posY,thick){
+			(thick===void 0)&& (thick=0);
+			var leftX=this.getLeftRange(posY);
+			if (this.leftBlock)return posX <=leftX+thick;
+			else return posX <=leftX-thick;
+		}
+
+		/**
+		*是否在右边界
+		*@param posX body的x坐标
+		*@param posY body的y坐标
+		*@param thick body的厚度
+		*@return
+		*/
+		__proto.inRight=function(posX,posY,thick){
+			(thick===void 0)&& (thick=0);
+			var rightX=this.getRightRange(posY);
+			if (this.leftBlock)return posX >=rightX-thick;
+			else return posX >=rightX+thick;
 		}
 
 		/**
@@ -836,9 +875,9 @@ var Laya=window.Laya=(function(window,document){
 
 		/**
 		*是否在面的范围内
-		*@param posX x坐标
-		*@param posY y坐标
-		*@param thick y坐标
+		*@param posX body的x坐标
+		*@param posY body的y坐标
+		*@param thick body的厚度
 		*@return
 		*/
 		__proto.inFaceRage=function(posX,posY,thick){
@@ -1011,7 +1050,22 @@ var Laya=window.Laya=(function(window,document){
 			}
 		}
 
-		FaceMangager.seachSameDepthCurRangeFace=function(x,y,z,){}
+		FaceMangager.seachSameDepthCurRangeFace=function(body){
+			if (!body.prevFace)return null;
+			var count=FaceMangager.faceAry.length;
+			for (var i=0;i < count;i++){
+				var face=FaceMangager.faceAry[i];
+				if (face.z==body.prevZ){
+					var height=face.downRightPoint.y-body.prevFace.downRightPoint.y;
+					var posY=body.prevY+height;
+					if (face.inFaceRage(body.x,posY,body.thick)){
+						return face;
+					}
+				}
+			}
+			return null;
+		}
+
 		FaceMangager.restrictInFace=function(face,body){
 			if (!face || !body)return;
 			if (face.leftRestrict){
@@ -1107,6 +1161,7 @@ var Laya=window.Laya=(function(window,document){
 		function Platform2DTest003(){
 			this.spt=null;
 			this.ball=null;
+			this.rect=null;
 			this.faceArr=null;
 			this.vx=0;
 			this.vy=0;
@@ -1120,10 +1175,14 @@ var Laya=window.Laya=(function(window,document){
 			this.g=this.spt.graphics;
 			Laya.stage.addChild(this.spt);
 			Laya.stage.addChild(this.ball);
+			this.rect=new Sprite();
+			this.rect.graphics.drawRect(0,0,10,10,"#ff0000");
+			Laya.stage.addChild(this.rect);
 			this.body=new Body();
 			this.body.x=100;
 			this.body.y=200;
 			this.body.thick=10;
+			this.body.g=0.4;
 			this.body.display=this.ball;
 			var startX=80;
 			var gapH=21;
@@ -1154,14 +1213,14 @@ var Laya=window.Laya=(function(window,document){
 			face.downBlock=true;
 			face.leftH=30;
 			FaceMangager.add(face);
-			face=new Surface(0,50,100,150,0,50);
+			face=new Surface(0,0,100,150,0,50);
 			face.name="downface4";
 			face.x=startX-50;
 			face.y=420;
 			face.z=-1;
 			face.upBlock=true;
 			face.leftBlock=true;
-			face.downBlock=true;
+			face.downBlock=false;
 			face.rightH=30;
 			FaceMangager.add(face);
 			face=new Surface(0,50,100,150,0,50);
@@ -1169,6 +1228,26 @@ var Laya=window.Laya=(function(window,document){
 			face.x=startX+100-50;
 			face.y=420-30;
 			face.z=-1;
+			face.upBlock=true;
+			face.leftBlock=false;
+			face.downBlock=false;
+			face.rightH=30;
+			FaceMangager.add(face);
+			face=new Surface(0,0,100,100,0,0);
+			face.name="downface6";
+			face.x=startX-50;
+			face.y=420+190;
+			face.z=-2;
+			face.upBlock=true;
+			face.leftBlock=true;
+			face.downBlock=true;
+			face.rightH=90;
+			FaceMangager.add(face);
+			face=new Surface(0,0,100,100,0,0);
+			face.name="downface7";
+			face.x=startX-50+100;
+			face.y=420+100;
+			face.z=-2;
 			face.upBlock=true;
 			face.leftBlock=false;
 			face.downBlock=true;
@@ -1244,6 +1323,10 @@ var Laya=window.Laya=(function(window,document){
 			this.body.update();
 			if (this.body.face)
 				this.body.face.debugDraw(this.spt.graphics,"#00FF80");
+			if (this.body.prevFace){
+				this.rect.x=this.body.prevFace.x+this.body.prevFace.upLeftPoint.x+30;
+				this.rect.y=this.body.prevFace.y+this.body.prevFace.upLeftPoint.y+30;
+			}
 		}
 
 		Platform2DTest003.g=null

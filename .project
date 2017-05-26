@@ -5,8 +5,8 @@
 	<projects>
 	</projects>
 	<buildSpec>
-		<buildCommand>
-			<name>com.adobe.flexbuilder.project.flexbuilder</name>
+		<buildCommand> 								
+			<name>com.adobe.flexbuilder.project. </name>
 			<arguments>
 			</arguments>
 		</buildCommand>

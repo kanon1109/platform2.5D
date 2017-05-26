@@ -22,15 +22,15 @@ import manager.FaceMangager;
 public class Body 
 {
 	//方向常量
-	private static const NONE:int = 0;
-	private static const LEFT:int = 1;
-	private static const RIGHT:int = 2;
-	private static const UP:int = 3;
-	private static const DOWN:int = 4;
+	public static const NONE:int = 0;
+	public static const LEFT:int = 1;
+	public static const RIGHT:int = 2;
+	public static const UP:int = 3;
+	public static const DOWN:int = 4;
 	//是否跳跃状态
 	private var isJump:Boolean;
-	//跳跃时的方向
-	private var positionState:int;
+	//body在face上的纵向位置
+	private var positionVerticalState:int;
 	//下落之前的y坐标
 	private var prevFaceY:Number;
 	//---public---
@@ -58,6 +58,8 @@ public class Body
 	public var thick:Number = 0;
 	//方向
 	public var direction:int;
+	
+	public var tempFace:Surface;
 	public function Body() 
 	{
 		
@@ -151,7 +153,7 @@ public class Body
 							else if (this.prevZ - 1 == face.z)
 							{
 								//下一层 
-								if (face.inUpRange(this.x, this.thick) && this.positionState == DOWN)
+								if (face.inUpRange(this.x, this.thick) && this.positionVerticalState == DOWN)
 								{
 									posY = face.upPosY;
 									nextFace = face;
@@ -160,6 +162,7 @@ public class Body
 						}
 						if (nextFace && this.y >= posY && this.prevY < posY)
 						{
+							trace(nextFace.name, posY);
 							this.touchDown(nextFace, posY);
 							return;
 						}
@@ -171,7 +174,7 @@ public class Body
 				if (this.jumpVy >= 0)
 				{
 					//trace("positionState", this.positionState);
-					if (this.positionState == UP)
+					if (this.positionVerticalState == UP)
 					{
 						var faceAry:Array = FaceMangager.seachTopJumpFaceRange(this.x, this.prevZ, this.thick);
 						var count:int = faceAry.length; 
@@ -195,7 +198,7 @@ public class Body
 							}
 						}
 					}
-					else if (this.positionState == NONE)
+					else if (this.positionVerticalState == NONE)
 					{
 						if (this.jumpVx == 0)
 						{
@@ -234,7 +237,7 @@ public class Body
 							}
 						}
 					} 
-					else if (this.positionState == DOWN)
+					else if (this.positionVerticalState == DOWN)
 					{
 						if (this.jumpVx == 0)
 						{
@@ -278,6 +281,14 @@ public class Body
 				}
 			}
 		}
+	}
+	
+	
+	protected function jumpCage():void
+	{
+		if (!this.isJump) return;
+		tempFace = FaceMangager.seachSameDepthCurRangeFace(this);
+		if (tempFace) trace("face", tempFace.name);
 	}
 	
 	/**
@@ -341,12 +352,20 @@ public class Body
 		if (!face) return;
 		//在 顶部 跳跃
 		if (this.y <= face.upPosY)
-			this.positionState = UP;
+			this.positionVerticalState = UP;
 		else if (this.y >=face.downPosY)
-			this.positionState = DOWN;
+			this.positionVerticalState = DOWN;
 		else 
-			this.positionState = NONE;
-
+			this.positionVerticalState = NONE;
+			
+/*		if (face.inLeft(this.x, this.y, this.thick))
+			this.positionHorizontalState = LEFT;
+		else if (face.inRight(this.x, this.y, this.thick))
+			this.positionHorizontalState = RIGHT;
+		else
+			this.positionHorizontalState = NONE;
+			
+		trace("this.positionHorizontalState", this.positionHorizontalState);*/
 	}
 	
 	/**
@@ -394,6 +413,7 @@ public class Body
 		this.updateJumpVx();
 		this.updateFacePosState(this.face);
 		this.updateFace();
+		this.jumpCage();
 		this.updateDisplay();
 	}
 }

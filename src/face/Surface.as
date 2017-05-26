@@ -98,7 +98,8 @@ public class Surface
 	 */
 	public function getLeftRange(posY:Number):Number
 	{
-		if (Math.abs(this.leftSkew) == 90) return this.x + this.upLeftPoint.x;
+		if (Math.abs(this.leftSkew) == 90 || 
+			Math.abs(this.leftSkew) == 0) return this.x + this.upLeftPoint.x;
 		var skew:Number = this.leftSkew;
 		if (skew > 90) skew = 180 - this.leftSkew;
 		var rand:Number = skew * Math.PI / 180;
@@ -118,7 +119,8 @@ public class Surface
 	 */
 	public function getRightRange(posY:Number):Number
 	{
-		if (Math.abs(this.rightSkew) == 90) return this.x + this.upRightPoint.x;
+		if (Math.abs(this.rightSkew) == 90 ||
+			Math.abs(this.rightSkew) == 0) return this.x + this.upRightPoint.x;
 		var skew:Number = this.rightSkew;
 		if (skew > 90) skew = 180 - this.rightSkew;
 		var rand:Number = skew * Math.PI / 180;
@@ -165,7 +167,7 @@ public class Surface
 	
 	/**
 	 * 是否在横向范围内
-	 * @param	posY	当前的y坐标
+	 * @param	posY	body的y坐标
 	 * @return
 	 */
 	public function inVerticalRange(posY:Number):Boolean
@@ -176,7 +178,7 @@ public class Surface
 	
 	/**
 	 * 是否在左上范围内
-	 * @param	posX		当前x坐标
+	 * @param	posX		body的x坐标
 	 * @param	thick		body的厚度
 	 * @return
 	 */
@@ -187,13 +189,41 @@ public class Surface
 	
 	/**
 	 * 是否在右上范围内
-	 * @param	posX		当前x坐标
+	 * @param	posX		body的x坐标
 	 * @param	thick		body的厚度
 	 * @return
 	 */
 	public function inRightUpRange(posX:Number, thick:Number = 0):Boolean
 	{
 		return posX <= this.x + this.upRightPoint.x + thick;
+	}
+	
+	/**
+	 * 是否在左边界
+	 * @param	posX	body的x坐标
+	 * @param	posY	body的y坐标
+	 * @param	thick	body的厚度
+	 * @return
+	 */
+	public function inLeft(posX:Number, posY:Number, thick:Number = 0):Boolean
+	{
+		var leftX:Number = this.getLeftRange(posY);
+		if (this.leftBlock) return posX <= leftX + thick;
+		else return posX <= leftX - thick;
+	}
+	
+	/**
+	 * 是否在右边界
+	 * @param	posX	body的x坐标
+	 * @param	posY	body的y坐标
+	 * @param	thick	body的厚度
+	 * @return
+	 */
+	public function inRight(posX:Number, posY:Number, thick:Number = 0):Boolean
+	{
+		var rightX:Number = this.getRightRange(posY);
+		if (this.leftBlock) return posX >= rightX - thick;
+		else return posX >= rightX + thick;
 	}
 
 	/**
@@ -232,9 +262,9 @@ public class Surface
 	
 	/**
 	 * 是否在面的范围内
-	 * @param	posX		x坐标
-	 * @param	posY		y坐标
-	 * @param	thick		y坐标
+	 * @param	posX		body的x坐标
+	 * @param	posY		body的y坐标
+	 * @param	thick		body的厚度
 	 * @return
 	 */
 	public function inFaceRage(posX:Number, posY:Number, thick:Number = 0):Boolean
