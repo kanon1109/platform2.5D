@@ -67,8 +67,8 @@ public class FaceMangager
 			if (face.z == body.prevZ)
 			{
 				//计算 body.prevY  高度
-				var height:Number = face.downRightPoint.y - body.prevFace.downRightPoint.y;
-				var posY:Number = body.prevY + height;
+				var height:Number = face.downPosY - body.prevFace.downPosY;
+				var posY:Number = body.prevFaceY + height;
 				if (face.inFaceRage(body.x, posY, body.thick))
 				{
 					return face;

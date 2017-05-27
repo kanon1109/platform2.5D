@@ -43,7 +43,7 @@ public class Platform2DTest003
 		this.body.x = 100;
 		this.body.y = 200;
 		this.body.thick = 10;
-		this.body.g = 0.4;
+		this.body.g = 0.7;
 		this.body.display = ball;
 		
 		//最下层
@@ -86,19 +86,19 @@ public class Platform2DTest003
 		face = new Surface(0, 0, 100, 150, 0, 50);
 		face.name = "downface4";
 		face.x = startX - 50;
-		face.y = 420;
+		face.y = 490;
 		face.z = -1;
 		face.upBlock = true;
 		face.leftBlock = true;
 		face.downBlock = false;
-		face.rightH = 30;
+		face.rightH = 100;
 		FaceMangager.add(face);
 		
 		
 		face = new Surface(0, 50, 100, 150, 0, 50);
 		face.name = "downface5";
 		face.x = startX + 100 - 50;
-		face.y = 420 - 30;
+		face.y = 390;
 		face.z = -1;
 		face.upBlock = true;
 		face.leftBlock = false;
@@ -109,7 +109,7 @@ public class Platform2DTest003
 		
 		face = new Surface(0, 0, 100, 100, 0, 0);
 		face.name = "downface6";
-		face.x = startX - 50;
+		face.x = startX - 50 + 150;
 		face.y = 420 + 190;
 		face.z = -2;
 		face.upBlock = true;
@@ -120,7 +120,7 @@ public class Platform2DTest003
 		
 		face = new Surface(0, 0, 100, 100, 0, 0);
 		face.name = "downface7";
-		face.x = startX - 50 + 100;
+		face.x = startX - 50 + 100 + 150;
 		face.y = 420 + 100;
 		face.z = -2;
 		face.upBlock = true;
@@ -218,10 +218,10 @@ public class Platform2DTest003
 		if (this.body.face)
 			this.body.face.debugDraw(this.spt.graphics, "#00FF80");
 			
-		if ( this.body.prevFace)
+		if ( this.body.tempFace)
 		{
-			this.rect.x = this.body.prevFace.x + this.body.prevFace.upLeftPoint.x + 30;
-			this.rect.y = this.body.prevFace.y + this.body.prevFace.upLeftPoint.y + 30;
+			this.rect.x = this.body.tempFace.x + this.body.tempFace.upLeftPoint.x + 30;
+			this.rect.y = this.body.tempFace.y + this.body.tempFace.upLeftPoint.y + 30;
 		}
 	}
 }

@@ -581,10 +581,28 @@ var Laya=window.Laya=(function(window,document){
 			}
 		}
 
+		/**
+		*跳跃时限制高度
+		*/
 		__proto.jumpCage=function(){
 			if (!this.isJump)return;
-			this.tempFace=FaceMangager.seachSameDepthCurRangeFace(this);
-			if (this.tempFace)console.log("face",this.tempFace.name);
+			var face=FaceMangager.seachSameDepthCurRangeFace(this);
+			this.tempFace=face;
+			if (face){
+				var height=face.downPosY-this.prevFace.downPosY;
+				var posY=this.prevFaceY+height;
+				if (face.inLeft(this.x,posY,this.thick)&& this.jumpVx < 0){
+					console.log("left face ",face.name,face.leftBlock);
+					console.log("this.y ",this.y,this.prevFaceY-face.leftH);
+					if (this.y >=this.prevFaceY-face.leftH || face.leftBlock)
+						this.blockSpring();
+				}
+				else if (face.inRight(this.x,posY,this.thick)&& this.jumpVx > 0){
+					console.log("right face ",face.name,face.leftBlock);
+					if (this.y >=this.prevFaceY-face.rightH || face.rightBlock)
+						this.blockSpring();
+				}
+			}
 		}
 
 		/**
@@ -1056,8 +1074,8 @@ var Laya=window.Laya=(function(window,document){
 			for (var i=0;i < count;i++){
 				var face=FaceMangager.faceAry[i];
 				if (face.z==body.prevZ){
-					var height=face.downRightPoint.y-body.prevFace.downRightPoint.y;
-					var posY=body.prevY+height;
+					var height=face.downPosY-body.prevFace.downPosY;
+					var posY=body.prevFaceY+height;
 					if (face.inFaceRage(body.x,posY,body.thick)){
 						return face;
 					}
@@ -1182,7 +1200,7 @@ var Laya=window.Laya=(function(window,document){
 			this.body.x=100;
 			this.body.y=200;
 			this.body.thick=10;
-			this.body.g=0.4;
+			this.body.g=0.7;
 			this.body.display=this.ball;
 			var startX=80;
 			var gapH=21;
@@ -1216,17 +1234,17 @@ var Laya=window.Laya=(function(window,document){
 			face=new Surface(0,0,100,150,0,50);
 			face.name="downface4";
 			face.x=startX-50;
-			face.y=420;
+			face.y=490;
 			face.z=-1;
 			face.upBlock=true;
 			face.leftBlock=true;
 			face.downBlock=false;
-			face.rightH=30;
+			face.rightH=100;
 			FaceMangager.add(face);
 			face=new Surface(0,50,100,150,0,50);
 			face.name="downface5";
 			face.x=startX+100-50;
-			face.y=420-30;
+			face.y=390;
 			face.z=-1;
 			face.upBlock=true;
 			face.leftBlock=false;
@@ -1235,7 +1253,7 @@ var Laya=window.Laya=(function(window,document){
 			FaceMangager.add(face);
 			face=new Surface(0,0,100,100,0,0);
 			face.name="downface6";
-			face.x=startX-50;
+			face.x=startX-50+150;
 			face.y=420+190;
 			face.z=-2;
 			face.upBlock=true;
@@ -1245,7 +1263,7 @@ var Laya=window.Laya=(function(window,document){
 			FaceMangager.add(face);
 			face=new Surface(0,0,100,100,0,0);
 			face.name="downface7";
-			face.x=startX-50+100;
+			face.x=startX-50+100+150;
 			face.y=420+100;
 			face.z=-2;
 			face.upBlock=true;
@@ -1323,9 +1341,9 @@ var Laya=window.Laya=(function(window,document){
 			this.body.update();
 			if (this.body.face)
 				this.body.face.debugDraw(this.spt.graphics,"#00FF80");
-			if (this.body.prevFace){
-				this.rect.x=this.body.prevFace.x+this.body.prevFace.upLeftPoint.x+30;
-				this.rect.y=this.body.prevFace.y+this.body.prevFace.upLeftPoint.y+30;
+			if (this.body.tempFace){
+				this.rect.x=this.body.tempFace.x+this.body.tempFace.upLeftPoint.x+30;
+				this.rect.y=this.body.tempFace.y+this.body.tempFace.upLeftPoint.y+30;
 			}
 		}
 
