@@ -246,8 +246,12 @@ public class Surface
 	 */
 	public function inDownRange(posX:Number, thick:Number = 0):Boolean
 	{
-		return posX >= this.x + this.downleftPoint.x - thick && 
-				posX <= this.x + this.downRightPoint.x + thick;
+		var thickL:Number = thick;
+		var thickR:Number = thick;
+		if (this.leftBlock || this._leftH > 0) thickL *= -1;
+		if (this.rightBlock || this._rightH > 0) thickR *= -1;
+		return posX >= this.x + this.downleftPoint.x - thickL && 
+				posX <= this.x + this.downRightPoint.x + thickR;
 	}
 	
 	/**

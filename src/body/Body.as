@@ -14,9 +14,9 @@ import manager.FaceMangager;
  * [跳跃时不判断face的cage]
  * [跳跃后触底在判断face]
  * [跨高度搜索face]
- * block边跳跃反弹
- * 跳跃判断高度
- * 碰壁后反弹
+ * [block边跳跃反弹]
+ * [跳跃判断高度]
+ * [碰壁后反弹]
  * @author Kanon
  */
 public class Body 
@@ -291,7 +291,7 @@ public class Body
 		if (!this.isJump) return;
 		var face:Surface = FaceMangager.seachSameDepthCurRangeFace(this);
 		tempFace = face;
-		//if (tempFace) trace("face", tempFace.name);
+		if (tempFace) trace("face", tempFace.name);
 		if (face)
 		{
 			var height:Number = face.downPosY - this.prevFace.downPosY;
@@ -397,6 +397,7 @@ public class Body
 	{
 		if (this.isJump || !this.face) return;
 		this.prevFaceY = this.y;
+		trace("this.prevFaceY", this.prevFaceY);
 		this.jumpVy = -speed;
 		this.isJump = true;
 		this.prevZ = this.face.z;

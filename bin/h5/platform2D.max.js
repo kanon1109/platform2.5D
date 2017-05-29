@@ -388,9 +388,9 @@ var Laya=window.Laya=(function(window,document){
 	*[跳跃时不判断face的cage]
 	*[跳跃后触底在判断face]
 	*[跨高度搜索face]
-	*block边跳跃反弹
-	*跳跃判断高度
-	*碰壁后反弹
+	*[block边跳跃反弹]
+	*[跳跃判断高度]
+	*[碰壁后反弹]
 	*@author Kanon
 	*/
 	//class body.Body
@@ -588,6 +588,7 @@ var Laya=window.Laya=(function(window,document){
 			if (!this.isJump)return;
 			var face=FaceMangager.seachSameDepthCurRangeFace(this);
 			this.tempFace=face;
+			if (this.tempFace)console.log("face",this.tempFace.name);
 			if (face){
 				var height=face.downPosY-this.prevFace.downPosY;
 				var posY=this.prevFaceY+height;
@@ -671,6 +672,7 @@ var Laya=window.Laya=(function(window,document){
 		__proto.jump=function(speed){
 			if (this.isJump || !this.face)return;
 			this.prevFaceY=this.y;
+			console.log("this.prevFaceY",this.prevFaceY);
 			this.jumpVy=-speed;
 			this.isJump=true;
 			this.prevZ=this.face.z;
@@ -878,8 +880,12 @@ var Laya=window.Laya=(function(window,document){
 		*/
 		__proto.inDownRange=function(posX,thick){
 			(thick===void 0)&& (thick=0);
-			return posX >=this.x+this.downleftPoint.x-thick &&
-			posX <=this.x+this.downRightPoint.x+thick;
+			var thickL=thick;
+			var thickR=thick;
+			if (this.leftBlock || this._leftH > 0)thickL *=-1;
+			if (this.rightBlock || this._rightH > 0)thickR *=-1;
+			return posX >=this.x+this.downleftPoint.x-thickL &&
+			posX <=this.x+this.downRightPoint.x+thickR;
 		}
 
 		/**
@@ -1071,17 +1077,23 @@ var Laya=window.Laya=(function(window,document){
 		FaceMangager.seachSameDepthCurRangeFace=function(body){
 			if (!body.prevFace)return null;
 			var count=FaceMangager.faceAry.length;
+			var dis=0;
+			var curFace;
 			for (var i=0;i < count;i++){
 				var face=FaceMangager.faceAry[i];
 				if (face.z==body.prevZ){
 					var height=face.downPosY-body.prevFace.downPosY;
 					var posY=body.prevFaceY+height;
+					console.log("seach face",face.name,body.prevFaceY);
 					if (face.inFaceRage(body.x,posY,body.thick)){
-						return face;
+						if (body.y-face.downPosY > dis){
+							dis=body.y-face.downPosY;
+							curFace=face;
+						}
 					}
 				}
 			}
-			return null;
+			return curFace;
 		}
 
 		FaceMangager.restrictInFace=function(face,body){
@@ -1253,7 +1265,7 @@ var Laya=window.Laya=(function(window,document){
 			FaceMangager.add(face);
 			face=new Surface(0,0,100,100,0,0);
 			face.name="downface6";
-			face.x=startX-50+150;
+			face.x=startX-50+150-20;
 			face.y=420+190;
 			face.z=-2;
 			face.upBlock=true;
@@ -1263,7 +1275,7 @@ var Laya=window.Laya=(function(window,document){
 			FaceMangager.add(face);
 			face=new Surface(0,0,100,100,0,0);
 			face.name="downface7";
-			face.x=startX-50+100+150;
+			face.x=startX-50+100+150-20;
 			face.y=420+100;
 			face.z=-2;
 			face.upBlock=true;

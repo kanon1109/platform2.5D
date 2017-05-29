@@ -109,7 +109,7 @@ public class Platform2DTest003
 		
 		face = new Surface(0, 0, 100, 100, 0, 0);
 		face.name = "downface6";
-		face.x = startX - 50 + 150;
+		face.x = startX - 50 + 150 - 20;
 		face.y = 420 + 190;
 		face.z = -2;
 		face.upBlock = true;
@@ -120,7 +120,7 @@ public class Platform2DTest003
 		
 		face = new Surface(0, 0, 100, 100, 0, 0);
 		face.name = "downface7";
-		face.x = startX - 50 + 100 + 150;
+		face.x = startX - 50 + 100 + 150 - 20;
 		face.y = 420 + 100;
 		face.z = -2;
 		face.upBlock = true;
