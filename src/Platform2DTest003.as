@@ -83,7 +83,7 @@ public class Platform2DTest003
 		FaceMangager.add(face);
 		
 		
-		face = new Surface(0, 0, 100, 150, 0, 50);
+		face = new Surface(50, 50, 100, 150, 0, 50);
 		face.name = "downface4";
 		face.x = startX - 50;
 		face.y = 490;

@@ -61,8 +61,7 @@ public class FaceMangager
 	{
 		if (!body.prevFace) return null;
 		var count:int = faceAry.length;
-		var dis:Number = 0;
-		var curFace:Surface;
+		var dis:Number = Infinity;
 		for (var i:int = 0; i < count; i++) 
 		{
 			var face:Surface = faceAry[i];
@@ -71,13 +70,12 @@ public class FaceMangager
 				//计算 body.prevY  高度
 				var height:Number = face.downPosY - body.prevFace.downPosY;
 				var posY:Number = body.prevFaceY + height;
-				trace("seach face", face.name, body.prevFaceY);
-				if (face.inFaceRage(body.x, posY, body.thick))
+				if (face.inFaceRage(body.x, posY, body.thick) && body.y <= posY)
 				{
-					//return face;
-					if (body.y - face.downPosY < dis)
+					var curDis:Number = posY - body.y;
+					if (curDis < dis)
 					{
-						dis = body.y - face.downPosY;
+						dis = curDis;
 						curFace = face;
 					}
 				}

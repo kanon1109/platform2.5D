@@ -1077,23 +1077,22 @@ var Laya=window.Laya=(function(window,document){
 		FaceMangager.seachSameDepthCurRangeFace=function(body){
 			if (!body.prevFace)return null;
 			var count=FaceMangager.faceAry.length;
-			var dis=0;
-			var curFace;
+			var dis=Infinity;
 			for (var i=0;i < count;i++){
 				var face=FaceMangager.faceAry[i];
 				if (face.z==body.prevZ){
 					var height=face.downPosY-body.prevFace.downPosY;
 					var posY=body.prevFaceY+height;
-					console.log("seach face",face.name,body.prevFaceY);
-					if (face.inFaceRage(body.x,posY,body.thick)){
-						if (body.y-face.downPosY > dis){
-							dis=body.y-face.downPosY;
-							curFace=face;
+					if (face.inFaceRage(body.x,posY,body.thick)&& body.y <=posY){
+						var curDis=posY-body.y;
+						if (curDis < dis){
+							dis=curDis;
+							/*no*/this.curFace=face;
 						}
 					}
 				}
 			}
-			return curFace;
+			return /*no*/this.curFace;
 		}
 
 		FaceMangager.restrictInFace=function(face,body){
@@ -1243,7 +1242,7 @@ var Laya=window.Laya=(function(window,document){
 			face.downBlock=true;
 			face.leftH=30;
 			FaceMangager.add(face);
-			face=new Surface(0,0,100,150,0,50);
+			face=new Surface(50,50,100,150,0,50);
 			face.name="downface4";
 			face.x=startX-50;
 			face.y=490;
@@ -15584,3 +15583,9 @@ var Laya=window.Laya=(function(window,document){
 	new Platform2DTest003();
 
 })(window,document,Laya);
+
+
+/*
+1 file:///E:/workspace/kanon/html5Project/layabox/layaAir/platform2D/src/manager/FaceMangager.as (77):warning:curFace This variable is not defined.
+2 file:///E:/workspace/kanon/html5Project/layabox/layaAir/platform2D/src/manager/FaceMangager.as (82):warning:curFace This variable is not defined.
+*/
