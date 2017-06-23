@@ -16,7 +16,7 @@
     </define>
     <define append="true">
       <name>CONFIG::timeStamp</name>
-      <value>'2017/4/4'</value>
+      <value>'2017/6/23'</value>
     </define>
     <define append="true">
       <name>CONFIG::air</name>
@@ -35,11 +35,11 @@
       <path-element>E:\workspace\kanon\html5Project\layabox\layaAir\platform2D\src</path-element>
       <path-element>E:\workspace\kanon\html5Project\layabox\layaAir\platform2D\libs\laya\src</path-element>
       <path-element>E:\workspace\kanon\flashProject\geckosas3lib\src</path-element>
-      <path-element>d:\Program Files (x86)\FlashDevelop\Library\AS3\classes</path-element>
+      <path-element>D:\Program Files (x86)\FlashDevelop\Library\AS3\classes</path-element>
     </source-path>
   </compiler>
   <file-specs>
-    <path-element>E:\workspace\kanon\html5Project\layabox\layaAir\platform2D\src\Platform2DTest.as</path-element>
+    <path-element>E:\workspace\kanon\html5Project\layabox\layaAir\platform2D\src\Platform2DTest005.as</path-element>
   </file-specs>
   <default-background-color>#FFFFFF</default-background-color>
   <default-frame-rate>30</default-frame-rate>

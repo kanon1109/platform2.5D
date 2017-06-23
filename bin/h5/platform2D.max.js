@@ -1176,18 +1176,46 @@ var Laya=window.Laya=(function(window,document){
 			}
 		}
 
+		FaceMangager.createFaceMap=function(dataStr){
+			manager.FaceMangager.createFaceMapByData(JSON.parse(dataStr));
+		}
+
+		FaceMangager.createFaceMapByData=function(data){
+			var arr=data;
+			var count=arr.length;
+			for (var i=0;i < count;i++){
+				var data=arr[i];
+				var face=new Surface(data.upLeftX,data.downLeftX,
+				data.upRightX,data.downRightX,
+				data.upY,data.downY);
+				face.name=data.name;
+				face.x=data.x;
+				face.y=data.y;
+				face.z=data.depth;
+				face.leftBlock=data.leftBlock;
+				face.rightBlock=data.rightBlock;
+				face.upBlock=data.upBlock;
+				face.downBlock=data.downBlock;
+				face.leftH=data.leftH;
+				face.rightH=data.rightH;
+				face.leftRestrict=data.leftRestrict;
+				face.rightRestrict=data.rightRestrict;
+				manager.FaceMangager.add(face);
+			}
+		}
+
 		FaceMangager.faceAry=[];
 		return FaceMangager;
 	})()
 
 
 	/**
-	*...面之间的跳跃
+	*...加背景地图测试
 	*@author Kanon
 	*/
-	//class Platform2DTest003
-	var Platform2DTest003=(function(){
-		function Platform2DTest003(){
+	//class Platform2DTest005
+	var Platform2DTest005=(function(){
+		function Platform2DTest005(){
 			this.spt=null;
 			this.ball=null;
 			this.rect=null;
@@ -1207,123 +1235,27 @@ var Laya=window.Laya=(function(window,document){
 			this.rect=new Sprite();
 			this.rect.graphics.drawRect(0,0,10,10,"#ff0000");
 			Laya.stage.addChild(this.rect);
+			Laya.loader.load("res/map.json",Handler.create(this,this.loadCompleteHandler));
 			this.body=new Body();
 			this.body.x=100;
 			this.body.y=200;
 			this.body.thick=10;
 			this.body.g=0.7;
 			this.body.display=this.ball;
-			var startX=80;
-			var gapH=21;
-			var face=new Surface(50,0,150,100,0,50);
-			face.name="downface1";
-			face.x=startX-50;
-			face.y=280;
-			face.z=0;
-			face.upBlock=true;
-			face.leftBlock=true;
-			FaceMangager.add(face);
-			face=new Surface(50,0,150,100,0,50);
-			face.name="downface2";
-			face.x=startX+100-50;
-			face.y=280;
-			face.z=0;
-			face.leftRestrict=true;
-			face.rightBlock=true;
-			face.downBlock=true;
-			FaceMangager.add(face);
-			face=new Surface(50,0,150,100,0,50);
-			face.name="downface3";
-			face.x=startX+230-50;
-			face.y=280+30;
-			face.z=0;
-			face.upBlock=true;
-			face.rightBlock=true;
-			face.downBlock=true;
-			face.leftH=30;
-			FaceMangager.add(face);
-			face=new Surface(50,50,100,150,0,50);
-			face.name="downface4";
-			face.x=startX-50;
-			face.y=490;
-			face.z=-1;
-			face.upBlock=true;
-			face.leftBlock=true;
-			face.downBlock=false;
-			face.rightH=100;
-			FaceMangager.add(face);
-			face=new Surface(0,50,100,150,0,50);
-			face.name="downface5";
-			face.x=startX+100-50;
-			face.y=390;
-			face.z=-1;
-			face.upBlock=true;
-			face.leftBlock=false;
-			face.downBlock=false;
-			face.rightH=30;
-			FaceMangager.add(face);
-			face=new Surface(0,0,100,100,0,0);
-			face.name="downface6";
-			face.x=startX-50+150-20;
-			face.y=420+190;
-			face.z=-2;
-			face.upBlock=true;
-			face.leftBlock=true;
-			face.downBlock=true;
-			face.rightH=90;
-			FaceMangager.add(face);
-			face=new Surface(0,0,100,100,0,0);
-			face.name="downface7";
-			face.x=startX-50+100+150-20;
-			face.y=420+100;
-			face.z=-2;
-			face.upBlock=true;
-			face.leftBlock=false;
-			face.downBlock=true;
-			face.rightH=30;
-			FaceMangager.add(face);
-			face=new Surface(50,0,150,100,0,50);
-			face.name="middleface1";
-			face.x=startX;
-			face.y=200;
-			face.z=1;
-			face.upBlock=true;
-			face.leftBlock=true;
-			FaceMangager.add(face);
-			face=new Surface(50,0,150,100,0,50);
-			face.name="middleface2";
-			face.x=startX+100;
-			face.y=230;
-			face.z=1;
-			face.upBlock=true;
-			face.rightBlock=true;
-			face.leftH=30;
-			FaceMangager.add(face);
-			face=new Surface(50,0,150,100,0,50);
-			face.name="upface1";
-			face.x=startX+50;
-			face.y=120;
-			face.z=2;
-			face.upBlock=true;
-			face.leftBlock=true;
-			FaceMangager.add(face);
-			face=new Surface(50,0,150,100,0,50);
-			face.name="upface2";
-			face.x=startX+190;
-			face.y=120;
-			face.z=2;
-			face.upBlock=true;
-			face.rightBlock=true;
-			FaceMangager.add(face);
 			Laya.stage.on("click",this,this.onClick);
 			Laya.stage.on("keydown",this,this.onKeyDown);
 			Laya.stage.on("keypress",this,this.onKeyPress);
 			Laya.stage.on("keyup",this,this.onKeyUp);
+		}
+
+		__class(Platform2DTest005,'Platform2DTest005');
+		var __proto=Platform2DTest005.prototype;
+		__proto.loadCompleteHandler=function(){
+			var json=Laya.loader.getRes("res/map.json");
+			FaceMangager.createFaceMap(JSON.stringify(json));
 			Laya.timer.frameLoop(1,this,this.loop);
 		}
 
-		__class(Platform2DTest003,'Platform2DTest003');
-		var __proto=Platform2DTest003.prototype;
 		__proto.onKeyPress=function(e){
 			var keyCode=e["keyCode"];
 		}
@@ -1358,8 +1290,8 @@ var Laya=window.Laya=(function(window,document){
 			}
 		}
 
-		Platform2DTest003.g=null
-		return Platform2DTest003;
+		Platform2DTest005.g=null
+		return Platform2DTest005;
 	})()
 
 
@@ -15579,8 +15511,8 @@ var Laya=window.Laya=(function(window,document){
 	})(FileBitmap)
 
 
-	Laya.__init([EventDispatcher,LoaderManager,Render,Browser,LocalStorage,Timer]);
-	new Platform2DTest003();
+	Laya.__init([LoaderManager,EventDispatcher,Render,Browser,LocalStorage,Timer]);
+	new Platform2DTest005();
 
 })(window,document,Laya);
 

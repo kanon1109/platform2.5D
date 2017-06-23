@@ -224,5 +224,44 @@ public class FaceMangager
 			face.debugDraw(g, lineColor, pointColor, heighColor);
 		}
 	}
+	
+	/**
+	 * 创建面的地图
+	 * @param	dataStr		数据字符串 json格式
+	 */
+	public static function createFaceMap(dataStr:String):void
+	{
+		FaceMangager.createFaceMapByData(JSON.parse(dataStr));
+	}
+	
+	/**
+	 * 创建面的地图
+	 * @param	data		数据
+	 */
+	public static function createFaceMapByData(data:Object):void
+	{
+		var arr:Array = data as Array;
+		var count:int = arr.length;
+		for (var i:int = 0; i < count; i++) 
+		{
+			var data:Object = arr[i];
+			var face:Surface = new Surface(data.upLeftX, data.downLeftX,
+											data.upRightX, data.downRightX, 
+											data.upY, data.downY);
+			face.name = data.name;
+			face.x = data.x;
+			face.y = data.y;
+			face.z = data.depth;
+			face.leftBlock = data.leftBlock;
+			face.rightBlock = data.rightBlock;
+			face.upBlock = data.upBlock;
+			face.downBlock = data.downBlock;
+			face.leftH = data.leftH;
+			face.rightH = data.rightH;
+			face.leftRestrict = data.leftRestrict;
+			face.rightRestrict = data.rightRestrict;
+			FaceMangager.add(face);
+		}
+	}
 }
 }
