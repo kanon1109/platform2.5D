@@ -1080,6 +1080,7 @@ var Laya=window.Laya=(function(window,document){
 			var dis=Infinity;
 			for (var i=0;i < count;i++){
 				var face=FaceMangager.faceAry[i];
+				var curFace;
 				if (face.z==body.prevZ){
 					var height=face.downPosY-body.prevFace.downPosY;
 					var posY=body.prevFaceY+height;
@@ -1087,12 +1088,12 @@ var Laya=window.Laya=(function(window,document){
 						var curDis=posY-body.y;
 						if (curDis < dis){
 							dis=curDis;
-							/*no*/this.curFace=face;
+							curFace=face;
 						}
 					}
 				}
 			}
-			return /*no*/this.curFace;
+			return curFace;
 		}
 
 		FaceMangager.restrictInFace=function(face,body){
@@ -1213,9 +1214,9 @@ var Laya=window.Laya=(function(window,document){
 	*...加背景地图测试
 	*@author Kanon
 	*/
-	//class Platform2DTest005
-	var Platform2DTest005=(function(){
-		function Platform2DTest005(){
+	//class Platform2DTest004
+	var Platform2DTest004=(function(){
+		function Platform2DTest004(){
 			this.spt=null;
 			this.ball=null;
 			this.rect=null;
@@ -1235,27 +1236,123 @@ var Laya=window.Laya=(function(window,document){
 			this.rect=new Sprite();
 			this.rect.graphics.drawRect(0,0,10,10,"#ff0000");
 			Laya.stage.addChild(this.rect);
-			Laya.loader.load("res/map.json",Handler.create(this,this.loadCompleteHandler));
 			this.body=new Body();
 			this.body.x=100;
 			this.body.y=200;
 			this.body.thick=10;
 			this.body.g=0.7;
 			this.body.display=this.ball;
+			var startX=80;
+			var gapH=21;
+			var face=new Surface(50,0,150,100,0,50);
+			face.name="downface1";
+			face.x=startX-50;
+			face.y=280;
+			face.z=0;
+			face.upBlock=true;
+			face.leftBlock=true;
+			FaceMangager.add(face);
+			face=new Surface(50,0,150,100,0,50);
+			face.name="downface2";
+			face.x=startX+100-50;
+			face.y=280;
+			face.z=0;
+			face.leftRestrict=true;
+			face.rightBlock=true;
+			face.downBlock=true;
+			FaceMangager.add(face);
+			face=new Surface(50,0,150,100,0,50);
+			face.name="downface3";
+			face.x=startX+230-50;
+			face.y=280+30;
+			face.z=0;
+			face.upBlock=true;
+			face.rightBlock=true;
+			face.downBlock=true;
+			face.leftH=30;
+			FaceMangager.add(face);
+			face=new Surface(50,50,100,150,0,50);
+			face.name="downface4";
+			face.x=startX-50;
+			face.y=490;
+			face.z=-1;
+			face.upBlock=true;
+			face.leftBlock=true;
+			face.downBlock=false;
+			face.rightH=100;
+			FaceMangager.add(face);
+			face=new Surface(0,50,100,150,0,50);
+			face.name="downface5";
+			face.x=startX+100-50;
+			face.y=390;
+			face.z=-1;
+			face.upBlock=true;
+			face.leftBlock=false;
+			face.downBlock=false;
+			face.rightH=30;
+			FaceMangager.add(face);
+			face=new Surface(0,0,100,100,0,0);
+			face.name="downface6";
+			face.x=startX-50+150-20;
+			face.y=420+190;
+			face.z=-2;
+			face.upBlock=true;
+			face.leftBlock=true;
+			face.downBlock=true;
+			face.rightH=90;
+			FaceMangager.add(face);
+			face=new Surface(0,0,100,100,0,0);
+			face.name="downface7";
+			face.x=startX-50+100+150-20;
+			face.y=420+100;
+			face.z=-2;
+			face.upBlock=true;
+			face.leftBlock=false;
+			face.downBlock=true;
+			face.rightH=30;
+			FaceMangager.add(face);
+			face=new Surface(50,0,150,100,0,50);
+			face.name="middleface1";
+			face.x=startX;
+			face.y=200;
+			face.z=1;
+			face.upBlock=true;
+			face.leftBlock=true;
+			FaceMangager.add(face);
+			face=new Surface(50,0,150,100,0,50);
+			face.name="middleface2";
+			face.x=startX+100;
+			face.y=230;
+			face.z=1;
+			face.upBlock=true;
+			face.rightBlock=true;
+			face.leftH=30;
+			FaceMangager.add(face);
+			face=new Surface(50,0,150,100,0,50);
+			face.name="upface1";
+			face.x=startX+50;
+			face.y=120;
+			face.z=2;
+			face.upBlock=true;
+			face.leftBlock=true;
+			FaceMangager.add(face);
+			face=new Surface(50,0,150,100,0,50);
+			face.name="upface2";
+			face.x=startX+190;
+			face.y=120;
+			face.z=2;
+			face.upBlock=true;
+			face.rightBlock=true;
+			FaceMangager.add(face);
 			Laya.stage.on("click",this,this.onClick);
 			Laya.stage.on("keydown",this,this.onKeyDown);
 			Laya.stage.on("keypress",this,this.onKeyPress);
 			Laya.stage.on("keyup",this,this.onKeyUp);
-		}
-
-		__class(Platform2DTest005,'Platform2DTest005');
-		var __proto=Platform2DTest005.prototype;
-		__proto.loadCompleteHandler=function(){
-			var json=Laya.loader.getRes("res/map.json");
-			FaceMangager.createFaceMap(JSON.stringify(json));
 			Laya.timer.frameLoop(1,this,this.loop);
 		}
 
+		__class(Platform2DTest004,'Platform2DTest004');
+		var __proto=Platform2DTest004.prototype;
 		__proto.onKeyPress=function(e){
 			var keyCode=e["keyCode"];
 		}
@@ -1290,8 +1387,8 @@ var Laya=window.Laya=(function(window,document){
 			}
 		}
 
-		Platform2DTest005.g=null
-		return Platform2DTest005;
+		Platform2DTest004.g=null
+		return Platform2DTest004;
 	})()
 
 
@@ -15512,12 +15609,6 @@ var Laya=window.Laya=(function(window,document){
 
 
 	Laya.__init([LoaderManager,EventDispatcher,Render,Browser,LocalStorage,Timer]);
-	new Platform2DTest005();
+	new Platform2DTest004();
 
 })(window,document,Laya);
-
-
-/*
-1 file:///E:/workspace/kanon/html5Project/layabox/layaAir/platform2D/src/manager/FaceMangager.as (77):warning:curFace This variable is not defined.
-2 file:///E:/workspace/kanon/html5Project/layabox/layaAir/platform2D/src/manager/FaceMangager.as (82):warning:curFace This variable is not defined.
-*/

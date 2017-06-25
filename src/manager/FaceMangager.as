@@ -65,6 +65,7 @@ public class FaceMangager
 		for (var i:int = 0; i < count; i++) 
 		{
 			var face:Surface = faceAry[i];
+			var curFace:Surface;
 			if (face.z == body.prevZ)
 			{
 				//计算 body.prevY  高度

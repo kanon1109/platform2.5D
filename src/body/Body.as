@@ -31,9 +31,10 @@ public class Body
 	private var isJump:Boolean;
 	//body在face上的纵向位置
 	private var positionVerticalState:int;
-	//下落之前的y坐标
-	private var prevFaceY:Number;
+
 	//---public---
+	//下落之前的y坐标
+	public var prevFaceY:Number;
 	//速度
 	public var vx:Number = 0;
 	public var prevVx:Number = 0;
