@@ -501,6 +501,7 @@ var Laya=window.Laya=(function(window,document){
 				}
 				else{
 					if (this.jumpVy >=0){
+						console.log("positionVerticalState",this.positionVerticalState);
 						if (this.positionVerticalState==3){
 							var faceAry=FaceMangager.seachTopJumpFaceRange(this.x,this.prevZ,this.thick);
 							var count=faceAry.length;
@@ -588,7 +589,7 @@ var Laya=window.Laya=(function(window,document){
 			if (!this.isJump)return;
 			var face=FaceMangager.seachSameDepthCurRangeFace(this);
 			this.tempFace=face;
-			if (this.tempFace)console.log("face",this.tempFace.name);
+			if (this.tempFace)console.log("seachSameDepthCurRangeFace face",this.tempFace.name);
 			if (face){
 				var height=face.downPosY-this.prevFace.downPosY;
 				var posY=this.prevFaceY+height;
@@ -626,6 +627,7 @@ var Laya=window.Laya=(function(window,document){
 			this.jumpVy=0;
 			this.vx=0;
 			this.vy=0;
+			this.updateFacePosState(this.face);
 		}
 
 		/**
@@ -672,7 +674,6 @@ var Laya=window.Laya=(function(window,document){
 		__proto.jump=function(speed){
 			if (this.isJump || !this.face)return;
 			this.prevFaceY=this.y;
-			console.log("this.prevFaceY",this.prevFaceY);
 			this.jumpVy=-speed;
 			this.isJump=true;
 			this.prevZ=this.face.z;

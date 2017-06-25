@@ -16,7 +16,7 @@
     </define>
     <define append="true">
       <name>CONFIG::timeStamp</name>
-      <value>'2017/6/23'</value>
+      <value>'2017/6/25'</value>
     </define>
     <define append="true">
       <name>CONFIG::air</name>
@@ -39,7 +39,7 @@
     </source-path>
   </compiler>
   <file-specs>
-    <path-element>E:\workspace\kanon\html5Project\layabox\layaAir\platform2D\src\Platform2DTest005.as</path-element>
+    <path-element>E:\workspace\kanon\html5Project\layabox\layaAir\platform2D\src\Platform2DTest004.as</path-element>
   </file-specs>
   <default-background-color>#FFFFFF</default-background-color>
   <default-frame-rate>30</default-frame-rate>

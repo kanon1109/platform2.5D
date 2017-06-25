@@ -175,6 +175,7 @@ public class Body
 				if (this.jumpVy >= 0)
 				{
 					//trace("positionState", this.positionState);
+					trace("positionVerticalState", this.positionVerticalState);
 					if (this.positionVerticalState == UP)
 					{
 						var faceAry:Array = FaceMangager.seachTopJumpFaceRange(this.x, this.prevZ, this.thick);
@@ -292,7 +293,7 @@ public class Body
 		if (!this.isJump) return;
 		var face:Surface = FaceMangager.seachSameDepthCurRangeFace(this);
 		tempFace = face;
-		if (tempFace) trace("face", tempFace.name);
+		if (tempFace) trace("seachSameDepthCurRangeFace face", tempFace.name);
 		if (face)
 		{
 			var height:Number = face.downPosY - this.prevFace.downPosY;
@@ -335,6 +336,7 @@ public class Body
 		this.jumpVy = 0;
 		this.vx = 0;
 		this.vy = 0;
+		this.updateFacePosState(this.face);
 	}
 	
 	/**
@@ -398,7 +400,6 @@ public class Body
 	{
 		if (this.isJump || !this.face) return;
 		this.prevFaceY = this.y;
-		trace("this.prevFaceY", this.prevFaceY);
 		this.jumpVy = -speed;
 		this.isJump = true;
 		this.prevZ = this.face.z;
