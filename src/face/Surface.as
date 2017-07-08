@@ -29,7 +29,7 @@ public class Surface
 	//右上点坐标
 	public var upRightPoint:Point;
 	//左下点坐标
-	public var downleftPoint:Point;
+	public var downLeftPoint:Point;
 	//右下点坐标
 	public var downRightPoint:Point;
 	//左边上下限制(用于左边相邻的face的upBlock为true时判断)
@@ -48,7 +48,7 @@ public class Surface
 	{
 		this.upLeftPoint = new Point(upLeftX, upY);
 		this.upRightPoint = new Point(upRightX, upY);
-		this.downleftPoint = new Point(downLeftX, downY);
+		this.downLeftPoint = new Point(downLeftX, downY);
 		this.downRightPoint = new Point(downRightX, downY);
 		
 		if (!this.validate())
@@ -108,7 +108,7 @@ public class Surface
 		if (this.leftSkew < 90) dx = this.height / Math.tan(rand) - sh / Math.tan(rand);
 		else dx = sh / Math.tan(rand);
 		var leftX:Number = this.upLeftPoint.x;
-		if (this.leftSkew > 90) leftX = this.downleftPoint.x;
+		if (this.leftSkew > 90) leftX = this.downLeftPoint.x;
 		return this.x + leftX + dx;
 	}
 	
@@ -134,11 +134,21 @@ public class Surface
 	}
 	
 	/**
+	 * 宽度
+	 */
+	public function get width():Number
+	{
+		var leftX:Number = this.upLeftPoint.x < this.downLeftPoint.x ? this.upLeftPoint.x : this.downLeftPoint.x;
+		var rightX:Number = this.upRightPoint.x < this.downRightPoint.x ? this.downLeftPoint.x : this.upLeftPoint.x;
+		return rightX - leftX;
+	}
+	
+	/**
 	 * 高度
 	 */
 	public function get height():Number
 	{
-		return this.downleftPoint.y - this.upLeftPoint.y;
+		return this.downLeftPoint.y - this.upLeftPoint.y;
 	}
 		
 	/**
@@ -149,8 +159,8 @@ public class Surface
 	{
 		return MathUtil.getRotation(this.upLeftPoint.x, 
 									this.upLeftPoint.y, 
-									this.downleftPoint.x, 
-									this.downleftPoint.y);
+									this.downLeftPoint.x, 
+									this.downLeftPoint.y);
 	}
 	
 	/**
@@ -173,7 +183,7 @@ public class Surface
 	public function inVerticalRange(posY:Number):Boolean
 	{
 		return posY >= this.y + this.upLeftPoint.y && 
-				posY <= this.y + this.downleftPoint.y
+				posY <= this.y + this.downLeftPoint.y
 	}
 	
 	/**
@@ -250,7 +260,7 @@ public class Surface
 		var thickR:Number = thick;
 		if (this.leftBlock || this._leftH > 0) thickL *= -1;
 		if (this.rightBlock || this._rightH > 0) thickR *= -1;
-		return posX >= this.x + this.downleftPoint.x - thickL && 
+		return posX >= this.x + this.downLeftPoint.x - thickL && 
 				posX <= this.x + this.downRightPoint.x + thickR;
 	}
 	
@@ -261,7 +271,7 @@ public class Surface
 	public function validate():Boolean
 	{
 		return this.upLeftPoint.y == this.upRightPoint.y && 
-			   this.downleftPoint.y == this.downRightPoint.y;
+			   this.downLeftPoint.y == this.downRightPoint.y;
 	}
 	
 	/**
@@ -298,12 +308,12 @@ public class Surface
 					
 		g.drawLine(this.x + this.upLeftPoint.x, 
 					this.y + this.upLeftPoint.y,
-					this.x + this.downleftPoint.x,
-					this.y + this.downleftPoint.y, 
+					this.x + this.downLeftPoint.x,
+					this.y + this.downLeftPoint.y, 
 					lineColor);
 					
-		g.drawLine(this.x + this.downleftPoint.x, 
-					this.y + this.downleftPoint.y,
+		g.drawLine(this.x + this.downLeftPoint.x, 
+					this.y + this.downLeftPoint.y,
 					this.x + this.downRightPoint.x,
 					this.y + this.downRightPoint.y, 
 					lineColor);
@@ -323,16 +333,16 @@ public class Surface
 						this.y + this.upLeftPoint.y - this._leftH, 
 						heighColor);
 						
-			g.drawLine(this.x + this.downleftPoint.x, 
-						this.y + this.downleftPoint.y,
-						this.x + this.downleftPoint.x,
-						this.y + this.downleftPoint.y - this._leftH, 
+			g.drawLine(this.x + this.downLeftPoint.x, 
+						this.y + this.downLeftPoint.y,
+						this.x + this.downLeftPoint.x,
+						this.y + this.downLeftPoint.y - this._leftH, 
 						heighColor);
 						
 			g.drawLine(this.x + this.upLeftPoint.x, 
 						this.y + this.upLeftPoint.y - this._leftH,
-						this.x + this.downleftPoint.x,
-						this.y + this.downleftPoint.y - this._leftH, 
+						this.x + this.downLeftPoint.x,
+						this.y + this.downLeftPoint.y - this._leftH, 
 						heighColor);
 		}
 					
