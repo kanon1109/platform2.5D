@@ -225,6 +225,7 @@ public class Body
 									//同一层的face
 									var height:Number = face.downPosY - this.prevFace.downPosY;
 									var curPosY:Number = this.prevFaceY + height;
+									if (curPosY < face.upPosY) curPosY = face.upPosY;
 									if (face.inFaceRage(this.x, curPosY, this.thick))
 									{
 										posY = curPosY;
